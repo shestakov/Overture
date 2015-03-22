@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9157DA45-3319-422C-87FC-CF8EFA0F14EA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Overture.ChangeSets.Tests</RootNamespace>
+    <AssemblyName>Overture.ChangeSets.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RhinoMocks.3.6.1\lib\net\Rhino.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttributeValueFactory\AttributeValueFactoryTest_MapByName.cs" />
+    <Compile Include="AttributeValueFactory\AttributeValueFactoryTest_Create.cs" />
+    <Compile Include="BusinessObject\BusinessObjectTest.cs" />
+    <Compile Include="BusinessObject\BusinessObjectSerialization.cs" />
+    <Compile Include="Infrastructure\TestSimpleBusinessObjectStatic.cs" />
+    <Compile Include="Infrastructure\TestDataObject.cs" />
+    <Compile Include="Infrastructure\TestSimpleBusinessObjectConcrete.cs" />
+    <Compile Include="Infrastructure\TestTypeRetriever.cs" />
+    <Compile Include="Infrastructure\TestBusinessObjectDefinitionProvider.cs" />
+    <Compile Include="Infrastructure\TestSerializer.cs" />
+    <Compile Include="Infrastructure\AttributeTestData.cs" />
+    <Compile Include="DefinitionProvider\BusinessObjectDefinitionProviderTest.cs" />
+    <Compile Include="DefinitionProvider\BusinessObjectDefinitionProviderTest_CornerCases.cs" />
+    <Compile Include="Infrastructure\CompositeObjectTestData.cs" />
+    <Compile Include="Infrastructure\TestCompositeBusinessObjectConrete.cs" />
+    <Compile Include="Infrastructure\TestCompositeBusinessObjectStatic.cs" />
+    <Compile Include="Infrastructure\TestEnum.cs" />
+    <Compile Include="MockingNinja\NinjectTestModule.cs" />
+    <Compile Include="MockingNinja\TestWithContainer.cs" />
+    <Compile Include="SerializerProvider\SerializerProviderTest_Enum.cs" />
+    <Compile Include="SerializerProvider\SerializerProviderTest_SimpleTypes.cs" />
+    <Compile Include="SerializerProvider\SerializerProviderTest_UnsupportedAttributeType.cs" />
+    <Compile Include="Serializers\EnumSerializer_Tests.cs" />
+    <Compile Include="Serializers\NotNullableAttributesSerializer_Test.cs" />
+    <Compile Include="Serializers\NullableAttributesSerializer_Test.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Overture.ChangeSets\Overture.ChangeSets.csproj">
+      <Project>{dfbbe4fb-b1a2-493e-a3d9-1d01017fb6fc}</Project>
+      <Name>Overture.ChangeSets</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

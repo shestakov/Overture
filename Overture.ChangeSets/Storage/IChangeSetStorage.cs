@@ -1,0 +1,13 @@
+using System;
+using System.Collections.Generic;
+using Overture.ChangeSets.Protobuf.Composite;
+
+namespace Overture.ChangeSets.Storage
+{
+	public interface IChangeSetStorage
+	{
+		void AppendChangeSet(CompositeObjectChangeSet changeSet);
+		IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId);
+		IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId, long sinceTimestamp);
+	}
+}

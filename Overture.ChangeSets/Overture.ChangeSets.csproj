@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DFBBE4FB-B1A2-493E-A3D9-1D01017FB6FC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Overture.ChangeSets</RootNamespace>
+    <AssemblyName>Overture.ChangeSets</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MiniProfiler">
+      <HintPath>..\packages\MiniProfiler.3.1.1.140\lib\net40\MiniProfiler.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessObjects\CompositeObjectChangeSetExceptionRecord.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protobuf\Headers\SimpleObjectHeader.cs" />
+    <Compile Include="Protobuf\Headers\CompositeObjectHeader.cs" />
+    <Compile Include="BusinessObjects\SimpleObjectChangeSetExceptionRecord.cs" />
+    <Compile Include="Protobuf\AttributeValues\IAttributeValueFactory.cs" />
+    <Compile Include="DefinitionProvider\ITypeRetriever.cs" />
+    <Compile Include="DefinitionProvider\TypeRetriever.cs" />
+    <Compile Include="SerializerProvider\AttributeValueSerializerProvider.cs" />
+    <Compile Include="Serializers\BooleanSerializer.cs" />
+    <Compile Include="Serializers\NullableBooleanSerializer.cs" />
+    <Compile Include="Serializers\NullableEnumSerializer.cs" />
+    <Compile Include="Storage\BusinessObjectStorage.cs" />
+    <Compile Include="Storage\IChangeSetStorage.cs" />
+    <Compile Include="Storage\ICompositeObjectCache.cs" />
+    <Compile Include="Storage\ICompositeObjectIndex.cs" />
+    <Compile Include="Storage\InMemoryChangeSetStorage.cs" />
+    <Compile Include="Storage\InMemoryCompositeObjectCache.cs" />
+    <Compile Include="Storage\InMemoryCompositeObjectIndex.cs" />
+    <Compile Include="Storage\ITimestampProvider.cs" />
+    <Compile Include="Storage\TimestampProvider.cs" />
+    <Compile Include="BusinessObjects\CompositeObject.cs" />
+    <Compile Include="Protobuf\Composite\CompositeObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Simple\SimpleObjectChangeSetType.cs" />
+    <Compile Include="Attributes\AttributeAttribute.cs" />
+    <Compile Include="Definitions\AttributeDefinition.cs" />
+    <Compile Include="DefinitionProvider\BusinessObjectDefinitionProvider.cs" />
+    <Compile Include="Attributes\CompositeObjectAttribute.cs" />
+    <Compile Include="Storage\IBusinessObjectStorage.cs" />
+    <Compile Include="Serializers\AttributeValueBinarySerializer.cs" />
+    <Compile Include="Serializers\DateTimeOffsetSerializer.cs" />
+    <Compile Include="Serializers\DoubleSerializer.cs" />
+    <Compile Include="Serializers\EnumSerializer.cs" />
+    <Compile Include="Serializers\GuidSerializer.cs" />
+    <Compile Include="SerializerProvider\IAttributeValueSerializerProvider.cs" />
+    <Compile Include="Serializers\IAttributeValueBinarySerializer.cs" />
+    <Compile Include="Attributes\SimpleObjectAttribute.cs" />
+    <Compile Include="Definitions\CompositeObjectDefinition.cs" />
+    <Compile Include="Protobuf\AttributeValues\AttributeValueFactory.cs" />
+    <Compile Include="DefinitionProvider\IBusinessObjectDefinitionProvider.cs" />
+    <Compile Include="Definitions\SimpleObjectDefinition.cs" />
+    <Compile Include="Definitions\BusinessObjectDefinition.cs" />
+    <Compile Include="Protobuf\Composite\CreateCompositeObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Composite\UpdateCompositeObjectChangeSet.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BusinessObjects\SimpleObject.cs" />
+    <Compile Include="Protobuf\AttributeValues\AttributeValue.cs" />
+    <Compile Include="Protobuf\Simple\SimpleObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Simple\CreateSimpleObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Simple\CreateOrUpdateSimpleObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Simple\DeleteSimpleObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Simple\UpdateSimpleObjectChangeSet.cs" />
+    <Compile Include="Protobuf\Simple\UpdateSimpleObjectParentChangeSet.cs" />
+    <Compile Include="Serializers\Int32Serializer.cs" />
+    <Compile Include="Serializers\Int64Serializer.cs" />
+    <Compile Include="Serializers\NullableDateTimeOffsetSerializer.cs" />
+    <Compile Include="Serializers\NullableDoubleSerializer.cs" />
+    <Compile Include="Serializers\NullableGuidSerializer.cs" />
+    <Compile Include="Serializers\NullableInt32Serializer.cs" />
+    <Compile Include="Serializers\NullableInt64Serializer.cs" />
+    <Compile Include="Serializers\StringSerializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
