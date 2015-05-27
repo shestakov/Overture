@@ -177,6 +177,8 @@ namespace Overture.ChangeSets.BusinessObjects
 				attributes[attribute] = attribute.Serializer.Deserialize(attribute.Name, attribute.AttributeType, modification.Value);
 			}
 
+			var lastModified = new DateTimeOffset(changeSet.Timestamp, new TimeSpan(0));
+
 			foreach(var simpleObjectChangeSet in changeSet.ChildObjectChangeSets)
 			{
 				if(simpleObjectChangeSet.Action == SimpleObjectChangeSetType.Delete && simpleObjects.ContainsKey(simpleObjectChangeSet.SimpleObjectId))
@@ -205,7 +207,7 @@ namespace Overture.ChangeSets.BusinessObjects
 
 					try
 					{
-						simpleObject.ApplyChangeSet(createOrUpdateSimpleObjectCommand, simpleObjectDefinition, changeSet.ChangeSetId);
+						simpleObject.ApplyChangeSet(createOrUpdateSimpleObjectCommand, simpleObjectDefinition, changeSet.ChangeSetId, lastModified);
 					}
 					catch(Exception ex)
 					{
@@ -218,7 +220,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			}
 
 			appliedChangeSets.Add(changeSet.ChangeSetId);
-			LastModified = new DateTimeOffset(changeSet.Timestamp, new TimeSpan(0));
+			LastModified = lastModified;
 			Revision = changeSet.ChangeSetId;
 		}
 

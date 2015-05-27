@@ -92,8 +92,9 @@ namespace Overture.ChangeSets.BusinessObjects
 		public Guid SimpleObjectTypeId { get; private set; }
 		public Guid? ParentId { get; private set; }
 		public Guid Revision { get; private set; }
+		public DateTimeOffset LastModified { get; private set; }
 
-		public void ApplyChangeSet(CreateOrUpdateSimpleObjectChangeSet changeSet, SimpleObjectDefinition definition, Guid revision)
+		public void ApplyChangeSet(CreateOrUpdateSimpleObjectChangeSet changeSet, SimpleObjectDefinition definition, Guid revision, DateTimeOffset lastModified)
 		{
 			foreach(var modification in changeSet.AttributeValues)
 			{
@@ -105,6 +106,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			}
 
 			Revision = revision;
+			LastModified = lastModified;
 		}
 
 		public byte[] Serialize()
