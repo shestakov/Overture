@@ -34,6 +34,11 @@ namespace Overture.ChangeSets.DefinitionProvider
 			throw new ArgumentException(string.Format("CompositeObjectType {0} not found", compositeObjectTypeId), "compositeObjectTypeId");
 		}
 
+		public void AddSimpleObjectDefinition(SimpleObjectDefinition definition)
+		{
+			simpleObjectDefinitions.Add(definition.SimpleObjectTypeId, definition);
+		}
+
 		private void Initialize()
 		{
 			simpleObjectDefinitions = new Dictionary<Guid, SimpleObjectDefinition>();

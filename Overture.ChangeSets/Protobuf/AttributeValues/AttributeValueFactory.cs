@@ -43,6 +43,12 @@ namespace Overture.ChangeSets.Protobuf.AttributeValues
 			return new AttributeValue(name, serializer.Serialize(name, type, value));
 		}
 
+		public AttributeValue Create(string name, Type type, object value)
+		{
+			var serializer = attributeValueSerializerProvider.Get(type);
+			return new AttributeValue(name, serializer.Serialize(name, type, value));
+		}
+
 		public AttributeValue[] MapByName<T>(object dataObject)
 		{
 			return MapByName(typeof(T), dataObject);

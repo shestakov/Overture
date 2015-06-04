@@ -23,5 +23,10 @@ namespace Overture.ChangeSets.Tests.Infrastructure
 		{
 			return provider.GetCompositeObjectDefinition(compositeObjectTypeId);
 		}
+
+		public void AddSimpleObjectDefinition(SimpleObjectDefinition definition)
+		{
+			provider.AddSimpleObjectDefinition(definition);
+		}
 	}
 }
