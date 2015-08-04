@@ -5,7 +5,6 @@ using Overture.ChangeSets.Attributes;
 using Overture.ChangeSets.BusinessObjects;
 using Overture.ChangeSets.DefinitionProvider;
 using Overture.ChangeSets.Protobuf.Composite;
-using StackExchange.Profiling;
 
 namespace Overture.ChangeSets.Storage
 {
@@ -56,8 +55,6 @@ namespace Overture.ChangeSets.Storage
 
 		public CompositeObject Get(Guid ownerId, Guid compositeObjectId)
 		{
-			var profiler = MiniProfiler.Current; // it's ok if this is null
-
 			var cachedObject = compositeObjectCache.Find(compositeObjectId);
 
 			if (cachedObject != null)
@@ -67,29 +64,13 @@ namespace Overture.ChangeSets.Storage
 
 			object lockHandle;
 
-			using (profiler.Step("Obtaining lock"))
-			{
-				compositeObjectCache.FindAndLock(compositeObjectId, TimeSpan.FromSeconds(30), out lockHandle);
-			}
+			compositeObjectCache.FindAndLock(compositeObjectId, TimeSpan.FromSeconds(30), out lockHandle);
+
+			var changeSets = changeSetStorage.GetChangeSets(compositeObjectId);
+
+			var compositeObject = new CompositeObject(changeSets, businessObjectDefinitionProvider);
 			
-			IEnumerable<CompositeObjectChangeSet> changeSets;
-
-			using (profiler.Step("Getting changesets"))
-			{
-				changeSets = changeSetStorage.GetChangeSets(compositeObjectId);
-			}
-			
-			CompositeObject compositeObject;
-
-			using (profiler.Step("Applying changesets"))
-			{
-				compositeObject = new CompositeObject(changeSets, businessObjectDefinitionProvider);
-			}
-
-			using (profiler.Step("Putting to cache and unlocking"))
-			{
-				compositeObjectCache.PutAndUnlock(compositeObject, lockHandle);
-			}
+			compositeObjectCache.PutAndUnlock(compositeObject, lockHandle);
 
 			return compositeObject;
 		}

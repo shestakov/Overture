@@ -7,6 +7,5 @@ namespace Overture.ChangeSets.DefinitionProvider
 	{
 		SimpleObjectDefinition FindSimpleObjectDefinition(Guid simpleObjectTypeId);
 		CompositeObjectDefinition GetCompositeObjectDefinition(Guid compositeObjectTypeId);
-		void AddSimpleObjectDefinition(SimpleObjectDefinition definition);
 	}
 }

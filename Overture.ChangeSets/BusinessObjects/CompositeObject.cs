@@ -143,14 +143,14 @@ namespace Overture.ChangeSets.BusinessObjects
 				.ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
-		public Dictionary<Guid, SimpleObject> GetSimpleObjectsOfType<T>(Guid parentId)
+		public Dictionary<Guid, SimpleObject> GetSimpleObjectsOfType<T>(Guid? parentId)
 		{
 			var typeId = typeof(T).GetCustomAttribute<SimpleObjectAttribute>().SimpleObjectTypeId;
 
 			return GetSimpleObjectsOfType(typeId, parentId);
 		}
 
-		public Dictionary<Guid, SimpleObject> GetSimpleObjectsOfType(Guid simpleObjectTypeId, Guid parentId)
+		public Dictionary<Guid, SimpleObject> GetSimpleObjectsOfType(Guid simpleObjectTypeId, Guid? parentId)
 		{
 			return SimpleObjects.Where(pair => pair.Value.SimpleObjectTypeId == simpleObjectTypeId && pair.Value.ParentId == parentId)
 				.ToDictionary(pair => pair.Key, pair => pair.Value);
