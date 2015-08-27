@@ -68,7 +68,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				{ int32Attribute, int32AttributeValue }
 			};
 
-			var simpleObject1 = new SimpleObject(simpleObjectId1, simpleObjectTypeId1, null, simpleObjectAttributes1, businessObjectDefinitionProvider);
+			var simpleObject1 = new SimpleObject(simpleObjectId1, null, simpleObjectAttributes1, simpleObjectDefinition1);
 
 			var simpleObjectId2 = new Guid("670FEED5-726F-43F8-896F-0F1C598F7A0F");
 			var simpleObjectAttributes2 = new Dictionary<AttributeDefinition, object>
@@ -76,7 +76,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				{ int32Attribute, int32AttributeValue },
 				{ stringAttribute, stringAttributeValue }
 			};
-			var simpleObject2 = new SimpleObject(simpleObjectId2, simpleObjectTypeId2, simpleObjectId1, simpleObjectAttributes2, businessObjectDefinitionProvider);
+			var simpleObject2 = new SimpleObject(simpleObjectId2, simpleObjectId1, simpleObjectAttributes2, simpleObjectDefinition2);
 
 			var simpleObjects = new[] { simpleObject1, simpleObject2 };
 			var compositeObject = new CompositeObject(id, compositeObjectTypeId, new DateTimeOffset(), Guid.NewGuid(), businessObjectDefinitionProvider,
@@ -133,15 +133,15 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				{ int32Attribute, int32AttributeValue }
 			};
 
-			var simpleObject = new SimpleObject(id, simpleObjectTypeId, parentId, simpleObjectAttributes, testBusinessObjectDefinitionProvider);
-
-			var serializedObject = simpleObject.Serialize();
-
 			var simpleObjectDefinition = new SimpleObjectDefinition(simpleObjectTypeId, new[] { stringAttribute, int32Attribute });
 
 			RegisterStrictMock<IBusinessObjectDefinitionProvider>()
 				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId))
 				.Return(simpleObjectDefinition);
+
+			var simpleObject = new SimpleObject(id, parentId, simpleObjectAttributes, simpleObjectDefinition);
+
+			var serializedObject = simpleObject.Serialize();
 
 			var businessObjectDefinitionProvider = Resolve<IBusinessObjectDefinitionProvider>();
 

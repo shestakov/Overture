@@ -190,20 +190,23 @@ namespace Overture.ChangeSets.BusinessObjects
 					SimpleObject simpleObject;
 					var createOrUpdateSimpleObjectCommand = simpleObjectChangeSet as CreateOrUpdateSimpleObjectChangeSet;
 
+					SimpleObjectDefinition simpleObjectDefinition;
+
 					if(simpleObjectChangeSet.Action == SimpleObjectChangeSetType.Create)
 					{
 						var commandCreate = (CreateSimpleObjectChangeSet) simpleObjectChangeSet;
-						simpleObject = new SimpleObject(commandCreate.SimpleObjectId, commandCreate.SimpleObjectType, commandCreate.ParentId, definitionProvider);
+						
+						simpleObjectDefinition = definitionProvider.FindSimpleObjectDefinition(commandCreate.SimpleObjectType);
+						if (simpleObjectDefinition == null)
+							continue;
+
+						simpleObject = new SimpleObject(commandCreate.SimpleObjectId, commandCreate.ParentId, simpleObjectDefinition);
 					}
 					else
 					{
 						simpleObject = simpleObjects[simpleObjectChangeSet.SimpleObjectId];
+						simpleObjectDefinition = simpleObject.SimpleObjectDefinition;
 					}
-
-					var simpleObjectDefinition = definitionProvider.FindSimpleObjectDefinition(simpleObject.SimpleObjectTypeId);
-
-					if(simpleObjectDefinition == null)
-						continue;
 
 					try
 					{
@@ -222,6 +225,14 @@ namespace Overture.ChangeSets.BusinessObjects
 			appliedChangeSets.Add(changeSet.ChangeSetId);
 			LastModified = lastModified;
 			Revision = changeSet.ChangeSetId;
+		}
+
+		public T Attribute<T>(string name)
+		{
+			var attributeDefinition = compositeObjectDefinition.Attributes[name];
+			if (!attributes.ContainsKey(attributeDefinition))
+				return default(T);
+			return (T)attributes[attributeDefinition];
 		}
 
 		public T Attribute<T>(Expression<Func<T>> attribute)

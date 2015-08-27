@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using Overture.ChangeSets.Attributes;
 using Overture.ChangeSets.DefinitionProvider;
 using Overture.ChangeSets.Definitions;
+using Overture.ChangeSets.Properties;
 using Overture.ChangeSets.Protobuf.AttributeValues;
 using Overture.ChangeSets.Protobuf.Headers;
 using Overture.ChangeSets.Protobuf.Simple;
@@ -17,18 +18,17 @@ namespace Overture.ChangeSets.BusinessObjects
 	{
 		private readonly Dictionary<AttributeDefinition, object> attributes = new Dictionary<AttributeDefinition, object>();
 		public readonly ReadOnlyDictionary<AttributeDefinition, object> Attributes;
-		private readonly SimpleObjectDefinition simpleObjectDefinition;
+		public SimpleObjectDefinition SimpleObjectDefinition { get; private set; }
 
-		public SimpleObject(Guid id, Guid simpleObjectTypeId, Guid? parentId, IBusinessObjectDefinitionProvider businessObjectDefinitionProvider)
+		public SimpleObject(Guid id, Guid? parentId, [NotNull] SimpleObjectDefinition simpleObjectDefinition)
 		{
+			if (simpleObjectDefinition == null)
+				throw new ArgumentNullException("simpleObjectDefinition");
+
 			Id = id;
-			SimpleObjectTypeId = simpleObjectTypeId;
+			SimpleObjectDefinition = simpleObjectDefinition;
 			ParentId = parentId;
 			Attributes = new ReadOnlyDictionary<AttributeDefinition, object>(attributes);
-			
-			simpleObjectDefinition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(SimpleObjectTypeId);
-			if (simpleObjectDefinition == null)
-				throw new Exception(string.Format("SimpleObject type {0} not found", SimpleObjectTypeId));
 		}
 
 		public SimpleObject(byte[] serializedObject, IBusinessObjectDefinitionProvider businessObjectDefinitionProvider)
@@ -37,20 +37,20 @@ namespace Overture.ChangeSets.BusinessObjects
 
 			var header = Serializer.DeserializeWithLengthPrefix<SimpleObjectHeader>(stream, PrefixStyle.Base128, 1);
 			Id = header.Id;
-			SimpleObjectTypeId = header.SimpleObjectTypeId;
 			ParentId = header.ParentId;
 			Revision = header.Revision;
+			var simpleObjectTypeId = header.SimpleObjectTypeId;
 
-			simpleObjectDefinition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(SimpleObjectTypeId);
-			if(simpleObjectDefinition == null)
+			SimpleObjectDefinition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(simpleObjectTypeId);
+			if(SimpleObjectDefinition == null)
 				throw new Exception(string.Format("SimpleObject type {0} not found", SimpleObjectTypeId));
 
 			var attributeValues = Serializer.DeserializeItems<AttributeValue>(stream, PrefixStyle.Base128, 2);
 			foreach(var attribute in attributeValues)
 			{
-				if(simpleObjectDefinition.Attributes.ContainsKey(attribute.Name))
+				if(SimpleObjectDefinition.Attributes.ContainsKey(attribute.Name))
 				{
-					var attributeDefinition = simpleObjectDefinition.Attributes[attribute.Name];
+					var attributeDefinition = SimpleObjectDefinition.Attributes[attribute.Name];
 					attributes.Add(attributeDefinition,
 						attributeDefinition.Serializer.Deserialize(attributeDefinition.Name, attributeDefinition.AttributeType, attribute.Value));
 				}
@@ -59,11 +59,19 @@ namespace Overture.ChangeSets.BusinessObjects
 			Attributes = new ReadOnlyDictionary<AttributeDefinition, object>(attributes);
 		}
 
-		public SimpleObject(Guid id, Guid simpleObjectTypeId, Guid? parentId, IDictionary<AttributeDefinition, object> attributes, IBusinessObjectDefinitionProvider businessObjectDefinitionProvider)
-			: this(id, simpleObjectTypeId, parentId, businessObjectDefinitionProvider)
+		public SimpleObject(Guid id, Guid? parentId, IDictionary<AttributeDefinition, object> attributes, [NotNull] SimpleObjectDefinition simpleObjectDefinition)
+			: this(id, parentId, simpleObjectDefinition)
 		{
 			this.attributes = new Dictionary<AttributeDefinition, object>(attributes);
 			Attributes = new ReadOnlyDictionary<AttributeDefinition, object>(attributes);
+		}
+
+		public T Attribute<T>(string name)
+		{
+			var attributeDefinition = SimpleObjectDefinition.Attributes[name];
+			if (!attributes.ContainsKey(attributeDefinition))
+				return default(T);
+			return (T)attributes[attributeDefinition];
 		}
 
 		public T Attribute<T>(Expression<Func<T>> attribute)
@@ -71,7 +79,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			var member = (MemberExpression)attribute.Body;
 			AttributeAttribute a = null;//member.Member.GetCustomAttribute<AttributeAttribute>();
 			var name = a != null ? a.Name : member.Member.Name;
-			var attributeDefinition = simpleObjectDefinition.Attributes[name];
+			var attributeDefinition = SimpleObjectDefinition.Attributes[name];
 			if (!attributes.ContainsKey(attributeDefinition))
 				return default(T);
 			return (T)attributes[attributeDefinition];
@@ -82,17 +90,21 @@ namespace Overture.ChangeSets.BusinessObjects
 			var member = (MemberExpression)attribute.Body;
 			AttributeAttribute a = null;//member.Member.GetCustomAttribute<AttributeAttribute>();
 			var name = a != null ? a.Name : member.Member.Name;
-			var attributeDefinition = simpleObjectDefinition.Attributes[name];
+			var attributeDefinition = SimpleObjectDefinition.Attributes[name];
 			if (!attributes.ContainsKey(attributeDefinition))
 				return default(TValue);
 			return (TValue)attributes[attributeDefinition];
 		}
 
 		public Guid Id { get; private set; }
-		public Guid SimpleObjectTypeId { get; private set; }
 		public Guid? ParentId { get; private set; }
 		public Guid Revision { get; private set; }
 		public DateTimeOffset LastModified { get; private set; }
+
+		public Guid SimpleObjectTypeId
+		{
+			get { return SimpleObjectDefinition.SimpleObjectTypeId; }
+		}
 
 		public void ApplyChangeSet(CreateOrUpdateSimpleObjectChangeSet changeSet, SimpleObjectDefinition definition, Guid revision, DateTimeOffset lastModified)
 		{
