@@ -15,12 +15,6 @@ namespace Overtute.Core.Web.HtmlHelpersExtensions
 			var includeAttrbiutes =
 				GetIncludeAttributes<AjaxControllerIncludeAttribute>(controller.GetType());
 
-
-			/*var includedControllers =
-				includeAttrbiutes.SelectMany(a => a.ControllerTypes)
-					.Select(type => new ReflectedControllerDescriptor(type))
-					.Union(new[] {new ReflectedControllerDescriptor(controller.GetType())});*/
-
 			var includedControllers =
 				includeAttrbiutes.SelectMany(a => a.ControllerTypes)
 					.Union(new[] { controller.GetType() });
@@ -30,9 +24,7 @@ namespace Overtute.Core.Web.HtmlHelpersExtensions
 
 			foreach (var controllerDescriptor in includedControllers)
 			{
-				//var controllerName = controllerDescriptor.ControllerName;
 				var controllerName = controllerDescriptor.Name.Substring(0, controllerDescriptor.Name.Length - "Controller".Length);
-				//var actions = controllerDescriptor.GetCanonicalActions().Where(a => GetActionMethod(a) != "").Select(a =>
 				var actions = controllerDescriptor.GetMethods().Where(a => GetActionMethod(a) != "").Select(a =>
 				{
 					var actionName = a.Name;

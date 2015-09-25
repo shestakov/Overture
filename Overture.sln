@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.ChangeSets", "Overture.ChangeSets\Overture.ChangeSets.csproj", "{DFBBE4FB-B1A2-493E-A3D9-1D01017FB6FC}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.ChangeSets.Sql", "Overture.ChangeSets.Sql\Overture.ChangeSets.Sql.csproj", "{67844432-10AE-4B1C-9ECA-82C37B5FB95E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.Core", "Overture.Core\Overture.Core.csproj", "{7C3E8796-C31C-4FF7-A10C-0F56897200A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.Core.Auth", "Overture.Core.Auth\Overture.Core.Auth.csproj", "{A9EF259C-D074-41C0-8E16-45E17096898E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overtute.Core.Web", "Overtute.Core.Web\Overtute.Core.Web.csproj", "{A597C07B-8150-4823-8C68-498FB223AA07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{7C3E8796-C31C-4FF7-A10C-0F56897200A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C3E8796-C31C-4FF7-A10C-0F56897200A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C3E8796-C31C-4FF7-A10C-0F56897200A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9EF259C-D074-41C0-8E16-45E17096898E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9EF259C-D074-41C0-8E16-45E17096898E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9EF259C-D074-41C0-8E16-45E17096898E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9EF259C-D074-41C0-8E16-45E17096898E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A597C07B-8150-4823-8C68-498FB223AA07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A597C07B-8150-4823-8C68-498FB223AA07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A597C07B-8150-4823-8C68-498FB223AA07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A597C07B-8150-4823-8C68-498FB223AA07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

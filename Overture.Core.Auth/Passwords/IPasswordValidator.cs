@@ -1,4 +1,4 @@
-﻿namespace Overture.Core.Auth.Utility
+﻿namespace Overture.Core.Auth.Passwords
 {
 	public interface IPasswordValidator
 	{

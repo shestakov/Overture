@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Overture.Core.Auth.Utility
+namespace Overture.Core.Auth.Passwords
 {
 	public class PasswordValidator : IPasswordValidator
 	{

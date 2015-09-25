@@ -106,6 +106,11 @@ namespace Overture.ChangeSets.BusinessObjects
 			get { return SimpleObjectDefinition.SimpleObjectTypeId; }
 		}
 
+		public void UpdateParentId(Guid? parentId)
+		{
+			ParentId = parentId;
+		}
+
 		public void ApplyChangeSet(CreateOrUpdateSimpleObjectChangeSet changeSet, SimpleObjectDefinition definition, Guid revision, DateTimeOffset lastModified)
 		{
 			foreach(var modification in changeSet.AttributeValues)

@@ -1,4 +1,4 @@
-namespace Overture.Core.Auth.Users
+namespace Overture.Core.Auth.Passwords
 {
 	public interface IRandomPasswordGenerator
 	{

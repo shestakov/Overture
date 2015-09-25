@@ -163,6 +163,11 @@ namespace Overture.ChangeSets.BusinessObjects
 			compositeObjectDefinition = definitionProvider.GetCompositeObjectDefinition(CompositeObjectTypeId);
 		}
 
+		/// <summary>
+		/// Applying a changeset. This method is NOT thread safe.
+		/// </summary>
+		/// <param name="changeSet"></param>
+		/// <param name="definitionProvider"></param>
 		public void ApplyChangeSet(CompositeObjectChangeSet changeSet, IBusinessObjectDefinitionProvider definitionProvider)
 		{
 			if(appliedChangeSets.Contains(changeSet.ChangeSetId))
@@ -185,6 +190,13 @@ namespace Overture.ChangeSets.BusinessObjects
 				{
 					simpleObjects.Remove(simpleObjectChangeSet.SimpleObjectId);
 				}
+				else if (simpleObjectChangeSet.Action == SimpleObjectChangeSetType.UpdateParent &&
+						 simpleObjects.ContainsKey(simpleObjectChangeSet.SimpleObjectId))
+				{
+					var simpleObject = simpleObjects[simpleObjectChangeSet.SimpleObjectId];
+					var updateSimpleObjectParentChangeSet = (UpdateSimpleObjectParentChangeSet)simpleObjectChangeSet;
+					simpleObject.UpdateParentId(updateSimpleObjectParentChangeSet.ParentId);
+				}
 				else
 				{
 					SimpleObject simpleObject;
@@ -202,10 +214,14 @@ namespace Overture.ChangeSets.BusinessObjects
 
 						simpleObject = new SimpleObject(commandCreate.SimpleObjectId, commandCreate.ParentId, simpleObjectDefinition);
 					}
-					else
+					else if (simpleObjects.ContainsKey(simpleObjectChangeSet.SimpleObjectId))
 					{
 						simpleObject = simpleObjects[simpleObjectChangeSet.SimpleObjectId];
 						simpleObjectDefinition = simpleObject.SimpleObjectDefinition;
+					}
+					else
+					{
+						continue;
 					}
 
 					try

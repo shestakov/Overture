@@ -1,36 +1,37 @@
+using Overture.Core.Auth.Passwords;
 using Overture.Core.Auth.Token;
 using Overture.Core.Auth.Users;
+using Overture.Core.Auth.Users.Storage;
 using Overture.Core.Auth.Utility;
 
 namespace Overture.Core.Auth.Authentication
 {
-	public class AuthenticationProvider<TUser, TUserActivationRquest, TChangePasswordRequest> : IAuthenticationProvider
+	public class AuthenticationProvider<TUser> : IAuthenticationProvider
 		where TUser : class, IUser
-		where TUserActivationRquest : class, IUserActivationRequest
-		where TChangePasswordRequest : class, IChangePasswordRequest
 	{
 		private readonly IAuthenticationTokenCryptography authenticationTokenCryptography;
 		private readonly IPasswordHasher passwordHasher;
-		private readonly IAuthDataStorage<TUser, TUserActivationRquest, TChangePasswordRequest> authDataStorage;
+		private readonly IUserStorage<TUser> userStorage;
 
 		public AuthenticationProvider(IAuthenticationTokenCryptography authenticationTokenCryptography,
 			IPasswordHasher passwordHasher,
-			IAuthDataStorage<TUser, TUserActivationRquest, TChangePasswordRequest> authDataStorage)
+			IUserStorage<TUser> userStorage)
 		{
 			this.authenticationTokenCryptography = authenticationTokenCryptography;
 			this.passwordHasher = passwordHasher;
-			this.authDataStorage = authDataStorage;
+			this.userStorage = userStorage;
 		}
 
 		public AuthenticationResult Authenticate(string login, string password)
 		{
-			login = login.Trim();
-			if (string.IsNullOrEmpty(login))
+			if (string.IsNullOrWhiteSpace(login))
 				throw new WrongLoginPasswordException();
 			if (string.IsNullOrEmpty(password))
 				throw new WrongLoginPasswordException();
 
-			var user = authDataStorage.FindUserByLogin(login);
+			login = login.Trim();
+
+			var user = userStorage.FindUserByLogin(login);
 			if (user == null)
 				throw new WrongLoginPasswordException();
 

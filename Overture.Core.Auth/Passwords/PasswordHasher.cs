@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Overture.Core.Auth.Utility
+namespace Overture.Core.Auth.Passwords
 {
 	public interface IPasswordHasher
 	{

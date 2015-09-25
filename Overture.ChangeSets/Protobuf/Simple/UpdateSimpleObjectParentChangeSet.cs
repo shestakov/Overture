@@ -23,7 +23,7 @@ namespace Overture.ChangeSets.Protobuf.Simple
 
 		public override SimpleObjectChangeSetType Action
 		{
-			get { return SimpleObjectChangeSetType.Update; }
+			get { return SimpleObjectChangeSetType.UpdateParent; }
 		}
 	}
 }

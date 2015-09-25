@@ -4,18 +4,18 @@ using Ninject.Extensions.Logging;
 using Overture.Core.Auth.Authentication;
 using Overture.Core.Auth.Token;
 using Overture.Core.Auth.Users;
+using Overture.Core.Auth.Users.Exceptions;
+using Overture.Core.Auth.Users.Storage;
 using Overtute.Core.Web.BruteForceProtection;
 
 namespace Overtute.Core.Web.Auth
 {
-	public class WebAuthenticationProvider<TUser, TUserActivationRquest, TChangePasswordRequest> :
+	public class WebAuthenticationProvider<TUser> :
 		IWebAuthenticationProvider<TUser>
 		where TUser : class, IUser
-		where TUserActivationRquest : IUserActivationRequest
-		where TChangePasswordRequest : IChangePasswordRequest
 	{
 		private readonly ILogger log;
-		private readonly IAuthDataStorage<TUser, TUserActivationRquest, TChangePasswordRequest> authDataStorage;
+		private readonly IUserStorage<TUser> userStorage;
 		private readonly IAuthenticationCookieManager authenticationCookieManager;
 		private readonly IAuthenticationTokenCryptography authenticationTokenCryptography;
 		private readonly IAuthenticationProvider authenticationProvider;
@@ -23,14 +23,14 @@ namespace Overtute.Core.Web.Auth
 		private readonly IPasswordBruteForceProtector passwordBruteForceProtector;
 
 		public WebAuthenticationProvider(
-			IAuthDataStorage<TUser, TUserActivationRquest, TChangePasswordRequest> authDataStorage,
+			IUserStorage<TUser> userStorage,
 			IAuthenticationCookieManager authenticationCookieManager,
 			IAuthenticationTokenCryptography authenticationTokenCryptography,
 			IAuthenticationProvider authenticationProvider, ILoginBruteForceProtector loginBruteForceProtector,
 			IPasswordBruteForceProtector passwordBruteForceProtector,
 			ILogger log)
 		{
-			this.authDataStorage = authDataStorage;
+			this.userStorage = userStorage;
 			this.authenticationCookieManager = authenticationCookieManager;
 			this.authenticationTokenCryptography = authenticationTokenCryptography;
 			this.authenticationProvider = authenticationProvider;
@@ -77,7 +77,7 @@ namespace Overtute.Core.Web.Auth
 
 		public void SignUserIn(HttpContextBase httpContext, Guid userId, bool rememberMe)
 		{
-			var user = authDataStorage.FindUser(userId);
+			var user = userStorage.FindUser(userId);
 			if (user == null)
 				throw new Exception(string.Format("Cannot find user {0}", userId));
 			var authenticationToken = new AuthenticationToken(user.UserId);
@@ -112,7 +112,7 @@ namespace Overtute.Core.Web.Auth
 			if (token == null || !token.IsValid)
 				return null;
 			
-			var user = authDataStorage.FindUser(token.UserId);
+			var user = userStorage.FindUser(token.UserId);
 			if (user == null || !user.IsActive)
 				return null;
 			return user;

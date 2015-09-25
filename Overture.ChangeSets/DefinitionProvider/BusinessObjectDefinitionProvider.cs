@@ -27,6 +27,11 @@ namespace Overture.ChangeSets.DefinitionProvider
 			return simpleObjectDefinitions.ContainsKey(simpleObjectTypeId) ? simpleObjectDefinitions[simpleObjectTypeId] : null;
 		}
 
+		public CompositeObjectDefinition FindCompositeObjectDefinition(Guid compositeObjectTypeId)
+		{
+			return compositeObjectDefinitions.ContainsKey(compositeObjectTypeId) ? compositeObjectDefinitions[compositeObjectTypeId] : null;
+		}
+
 		public CompositeObjectDefinition GetCompositeObjectDefinition(Guid compositeObjectTypeId)
 		{
 			if(compositeObjectDefinitions.ContainsKey(compositeObjectTypeId))

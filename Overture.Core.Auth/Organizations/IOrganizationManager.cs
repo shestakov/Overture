@@ -1,12 +1,15 @@
 ﻿using System;
 
-namespace Overture.Core.Auth.Tenants
+namespace Overture.Core.Auth.Organizations
 {
-	public interface ITenantManager<out TOrganization, in TOrganizationCreateForm, in TOrganizationUpdateForm, out TOrganizationUser, in TCreateUserForm>
+	public interface IOrganizationManager<out TOrganization, in TOrganizationCreateForm, in TOrganizationUpdateForm>
 	{
 		TOrganization CreateOrganization(TOrganizationCreateForm form, Guid userId);
 		void UpdateOrganization(Guid organizationId, TOrganizationUpdateForm form, Guid userId);
+	}
 
+	public interface IUserInvitationManager<out TOrganizationUser, in TCreateUserForm>
+	{
 		void SendUserInvitation(string email, Guid organizationId, Guid invitingUserId, string organizationTitle, Uri acceptInvitationUrl);
 		TOrganizationUser AcceptUserInvitation(Guid userInvitationId, TCreateUserForm form);
 		TOrganizationUser AcceptExistingUserInvitation(Guid userInvitationId);

@@ -1,6 +1,6 @@
 using System;
 
-namespace Overture.Core.Auth.Users
+namespace Overture.Core.Auth.Passwords
 {
 	public class RandomPasswordGenerator :IRandomPasswordGenerator
 	{

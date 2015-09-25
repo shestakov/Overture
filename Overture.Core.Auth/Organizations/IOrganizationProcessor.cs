@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Overture.Core.Auth.Tenants
+namespace Overture.Core.Auth.Organizations
 {
 	public interface IOrganizationProcessor<TOrganization, in TOrganizationCreateForm, in TOrganizationUpdateForm>
 	{
