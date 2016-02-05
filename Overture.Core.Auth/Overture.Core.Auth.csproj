@@ -44,6 +44,13 @@
     <Compile Include="Authentication\InactiveUserException.cs" />
     <Compile Include="Authentication\UserPasswordNotSetException.cs" />
     <Compile Include="Authentication\WrongLoginPasswordException.cs" />
+    <Compile Include="BruteForceProtection\BruteForceProtectorBase.cs" />
+    <Compile Include="BruteForceProtection\ILoginBruteForceProtector.cs" />
+    <Compile Include="BruteForceProtection\IPasswordBruteForceProtector.cs" />
+    <Compile Include="BruteForceProtection\IpBanException.cs" />
+    <Compile Include="BruteForceProtection\LoginBanException.cs" />
+    <Compile Include="BruteForceProtection\LoginBruteForceProtector.cs" />
+    <Compile Include="BruteForceProtection\PasswordBruteForceProtector.cs" />
     <Compile Include="Organizations\IOrganizationProcessor.cs" />
     <Compile Include="Organizations\OrganizationManager.cs" />
     <Compile Include="Organizations\UserInvitationManager.cs" />

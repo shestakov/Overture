@@ -12,12 +12,4 @@ namespace Overtute.Core.Web.Auth
 		TUser Authenticate(HttpContextBase httpContext);
 		void SignOut(HttpContextBase httpContext);
 	}
-
-	public class IpBanException : Exception
-	{
-	}
-
-	public class LoginBanException : Exception
-	{
-	}
 }

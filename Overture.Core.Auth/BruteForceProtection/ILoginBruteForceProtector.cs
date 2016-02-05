@@ -1,4 +1,4 @@
-namespace Overtute.Core.Web.BruteForceProtection
+namespace Overture.Core.Auth.BruteForceProtection
 {
 	public interface ILoginBruteForceProtector
 	{

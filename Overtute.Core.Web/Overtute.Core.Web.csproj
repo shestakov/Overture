@@ -78,10 +78,7 @@
     <Compile Include="Attributes\AjaxControllerIncludeAttribute.cs" />
     <Compile Include="Attributes\ClientModelAttribute.cs" />
     <Compile Include="Auth\AuthenticationCookieManager.cs" />
-    <Compile Include="BruteForceProtection\BruteForceProtectorBase.cs" />
     <Compile Include="Auth\IAuthenticationCookieManager.cs" />
-    <Compile Include="BruteForceProtection\ILoginBruteForceProtector.cs" />
-    <Compile Include="BruteForceProtection\IPasswordBruteForceProtector.cs" />
     <Compile Include="Auth\IWebAuthenticationProvider.cs" />
     <Compile Include="HtmlHelpersExtensions\AjaxUrlMapHtmlHelperExtensions.cs" />
     <Compile Include="HtmlHelpersExtensions\ColorHelper.cs" />
@@ -90,8 +87,6 @@
     <Compile Include="JsonNet\JsonNetGetResult.cs" />
     <Compile Include="JsonNet\JsonNetResultBase.cs" />
     <Compile Include="JsonNet\JsonNetSerializer.cs" />
-    <Compile Include="BruteForceProtection\LoginBruteForceProtector.cs" />
-    <Compile Include="BruteForceProtection\PasswordBruteForceProtector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Auth\WebAuthenticationProvider.cs" />
   </ItemGroup>

@@ -2,11 +2,11 @@
 using System.Web;
 using Ninject.Extensions.Logging;
 using Overture.Core.Auth.Authentication;
+using Overture.Core.Auth.BruteForceProtection;
 using Overture.Core.Auth.Token;
 using Overture.Core.Auth.Users;
 using Overture.Core.Auth.Users.Exceptions;
 using Overture.Core.Auth.Users.Storage;
-using Overtute.Core.Web.BruteForceProtection;
 
 namespace Overtute.Core.Web.Auth
 {
