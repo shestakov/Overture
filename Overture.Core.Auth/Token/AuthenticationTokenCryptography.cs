@@ -6,6 +6,13 @@ namespace Overture.Core.Auth.Token
 {
 	public class AuthenticationTokenCryptography : IAuthenticationTokenCryptography
 	{
+		private readonly string authenticationKey;
+
+		public AuthenticationTokenCryptography(string authenticationKey)
+		{
+			this.authenticationKey = authenticationKey;
+		}
+
 		public byte[] EncryptToken(AuthenticationToken authenticationToken)
 		{
 			var tokenBytes = authenticationToken.Serialize();
@@ -63,7 +70,5 @@ namespace Overture.Core.Auth.Token
 			var tokenBytes = Convert.FromBase64String(encryptedTokenBase64);
 			return DecryptToken(tokenBytes);
 		}
-
-		private const string authenticationKey = "whYcKmPf8meqMI/jcuKbQRy/w6lpYnHUia79W8U5kFU=";
 	}
 }
