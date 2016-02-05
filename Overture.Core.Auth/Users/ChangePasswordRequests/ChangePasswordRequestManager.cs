@@ -39,10 +39,10 @@ namespace Overture.Core.Auth.Users.ChangePasswordRequests
 			if (user == null)
 				throw new LoginNotFoundException(login);
 
-			if (!user.IsActive)
-			{
-				throw new UserIsNotActiveException(user.UserId);
-			}
+			//if (!user.IsActive)
+			//{
+			//	throw new UserIsNotActiveException(user.UserId);
+			//}
 
 			var requestId = Guid.NewGuid();
 			var expirationDateTime = DateTimeOffset.UtcNow.Add(changePasswordRequestValidityPeriod);
@@ -83,6 +83,10 @@ namespace Overture.Core.Auth.Users.ChangePasswordRequests
 			changePasswordRequestDataStorage.UpdateChangePasswordRequest(changePasswordRequest);
 
 			SetUserPassword(user, password);
+
+			if (!user.IsActive)
+				user.DateTimeActivated = DateTimeOffset.UtcNow;
+
 			userStorage.UpdateUser(user);
 			return userStorage.FindUser(user.UserId);
 		}

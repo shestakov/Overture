@@ -12,7 +12,7 @@ namespace Overture.Core.Auth.Users
 		where TUserActivationRequest : class, IUserActivationRequest, new()
 		where TCreateUserForm : class, IUserForm
 	{
-		private readonly TimeSpan activateUserRequestValidityPeriod = new TimeSpan(1, 0, 0, 0);
+		private readonly TimeSpan activateUserRequestValidityPeriod = new TimeSpan(30, 0, 0, 0);
 		private readonly IUserStorage<TUser> userStorage;
 		private readonly IUserActivationRequestDataStorage<TUserActivationRequest> userActivationRequestDataStorage;
 		private readonly IAuthEmailSender authEmailSender;
