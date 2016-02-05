@@ -4,9 +4,9 @@ namespace Overture.Core.Auth.Passwords
 {
 	public class PasswordValidator : IPasswordValidator
 	{
-		private const int minimumLength = 8;
-		private const int upperCaseLength = 0;
-		private const int lowerCaseLength = 0;
+		private const int minimumLength = 6;
+		private const int upperCaseLength = 1;
+		private const int lowerCaseLength = 1;
 		private const int nonAlphaLength = 0;
 
 		public bool Validate(string password)
