@@ -16,7 +16,7 @@ namespace Overture.WebApi.Auth
 		private readonly IUserStorage<TUser> userStorage;
 		private readonly IWebApiAuthenticationCookieManager webApiAuthenticationCookieManager;
 		private readonly IAuthenticationTokenCryptography authenticationTokenCryptography;
-		private readonly IAuthenticationProvider authenticationProvider;
+		private readonly IAuthenticationProvider<TUser> authenticationProvider;
 		private readonly ILoginBruteForceProtector loginBruteForceProtector;
 		private readonly IPasswordBruteForceProtector passwordBruteForceProtector;
 
@@ -24,7 +24,7 @@ namespace Overture.WebApi.Auth
 			IUserStorage<TUser> userStorage,
 			IWebApiAuthenticationCookieManager webApiAuthenticationCookieManager,
 			IAuthenticationTokenCryptography authenticationTokenCryptography,
-			IAuthenticationProvider authenticationProvider, ILoginBruteForceProtector loginBruteForceProtector,
+			IAuthenticationProvider<TUser> authenticationProvider, ILoginBruteForceProtector loginBruteForceProtector,
 			IPasswordBruteForceProtector passwordBruteForceProtector,
 			ILogger log)
 		{
@@ -37,7 +37,7 @@ namespace Overture.WebApi.Auth
 			this.log = log;
 		}
 
-		public void SignIn(HttpResponseMessage response, string login, string password, bool rememberMe, string clientIpAddress)
+		public TUser SignIn(HttpResponseMessage response, string login, string password, bool rememberMe, string clientIpAddress)
 		{
 			if (!loginBruteForceProtector.CheckAttemptAllowed(clientIpAddress))
 				throw new IpBanException();
@@ -45,7 +45,7 @@ namespace Overture.WebApi.Auth
 			if (!passwordBruteForceProtector.CheckAttemptAllowed(login))
 				throw new LoginBanException();
 
-			AuthenticationResult userAuthenticationResult;
+			AuthenticationResult<TUser> userAuthenticationResult;
 			try
 			{
 				userAuthenticationResult = authenticationProvider.Authenticate(login, password);
@@ -68,7 +68,9 @@ namespace Overture.WebApi.Auth
 
 			webApiAuthenticationCookieManager.SetTokenCookie(response, userAuthenticationResult.EncryptedBase64EncodedToken, rememberMe);
 
-			log.Info($"User authenticated. login: {login}, userId: {userAuthenticationResult.UserId}");
+			log.Info($"User authenticated. login: {login}, userId: {userAuthenticationResult.User}");
+
+			return userAuthenticationResult.User;
 		}
 
 		public void SignUserIn(HttpResponseMessage response, Guid userId, bool rememberMe)

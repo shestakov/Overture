@@ -18,7 +18,7 @@ namespace Overtute.Core.Web.Auth
 		private readonly IUserStorage<TUser> userStorage;
 		private readonly IAuthenticationCookieManager authenticationCookieManager;
 		private readonly IAuthenticationTokenCryptography authenticationTokenCryptography;
-		private readonly IAuthenticationProvider authenticationProvider;
+		private readonly IAuthenticationProvider<TUser> authenticationProvider;
 		private readonly ILoginBruteForceProtector loginBruteForceProtector;
 		private readonly IPasswordBruteForceProtector passwordBruteForceProtector;
 
@@ -26,7 +26,7 @@ namespace Overtute.Core.Web.Auth
 			IUserStorage<TUser> userStorage,
 			IAuthenticationCookieManager authenticationCookieManager,
 			IAuthenticationTokenCryptography authenticationTokenCryptography,
-			IAuthenticationProvider authenticationProvider, ILoginBruteForceProtector loginBruteForceProtector,
+			IAuthenticationProvider<TUser> authenticationProvider, ILoginBruteForceProtector loginBruteForceProtector,
 			IPasswordBruteForceProtector passwordBruteForceProtector,
 			ILogger log)
 		{
@@ -49,7 +49,7 @@ namespace Overtute.Core.Web.Auth
 			if (!passwordBruteForceProtector.CheckAttemptAllowed(login))
 				throw new LoginBanException();
 
-			AuthenticationResult userAuthenticationResult;
+			AuthenticationResult<TUser> userAuthenticationResult;
 			try
 			{
 				userAuthenticationResult = authenticationProvider.Authenticate(login, password);
@@ -72,7 +72,7 @@ namespace Overtute.Core.Web.Auth
 
 			authenticationCookieManager.SetTokenCookie(httpContext, userAuthenticationResult.EncryptedBase64EncodedToken, rememberMe);
 
-			log.Info(string.Format("User authenticated. login: {0}, userId: {1}", login, userAuthenticationResult.UserId));
+			log.Info(string.Format("User authenticated. login: {0}, userId: {1}", login, userAuthenticationResult.User.UserId));
 		}
 
 		public void SignUserIn(HttpContextBase httpContext, Guid userId, bool rememberMe)

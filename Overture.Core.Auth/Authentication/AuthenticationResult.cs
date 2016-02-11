@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Overture.Core.Auth.Users;
 
 namespace Overture.Core.Auth.Authentication
 {
-	public class AuthenticationResult
+	public class AuthenticationResult<TUser> where TUser: class, IUser
 	{
-		public AuthenticationResult(string encryptedBase64EncodedToken, Guid userId)
+		public AuthenticationResult(string encryptedBase64EncodedToken, TUser user)
 		{
 			EncryptedBase64EncodedToken = encryptedBase64EncodedToken;
-			UserId = userId;
+			User = user;
 		}
 
 		public string EncryptedBase64EncodedToken { get; private set; }
-		public Guid UserId { get; private set; }
+		public TUser User { get; private set; }
 	}
 }

@@ -1,7 +1,9 @@
-﻿namespace Overture.Core.Auth.Authentication
+﻿using Overture.Core.Auth.Users;
+
+namespace Overture.Core.Auth.Authentication
 {
-	public interface IAuthenticationProvider
+	public interface IAuthenticationProvider<TUser> where TUser : class, IUser
 	{
-		AuthenticationResult Authenticate(string login, string password);
+		AuthenticationResult<TUser> Authenticate(string login, string password);
 	}
 }

@@ -2,11 +2,10 @@ using Overture.Core.Auth.Passwords;
 using Overture.Core.Auth.Token;
 using Overture.Core.Auth.Users;
 using Overture.Core.Auth.Users.Storage;
-using Overture.Core.Auth.Utility;
 
 namespace Overture.Core.Auth.Authentication
 {
-	public class AuthenticationProvider<TUser> : IAuthenticationProvider
+	public class AuthenticationProvider<TUser> : IAuthenticationProvider<TUser>
 		where TUser : class, IUser
 	{
 		private readonly IAuthenticationTokenCryptography authenticationTokenCryptography;
@@ -22,7 +21,7 @@ namespace Overture.Core.Auth.Authentication
 			this.userStorage = userStorage;
 		}
 
-		public AuthenticationResult Authenticate(string login, string password)
+		public AuthenticationResult<TUser> Authenticate(string login, string password)
 		{
 			if (string.IsNullOrWhiteSpace(login))
 				throw new WrongLoginPasswordException();
@@ -50,7 +49,7 @@ namespace Overture.Core.Auth.Authentication
 			var authenticationToken = new AuthenticationToken(user.UserId);
 			var encryptedBase64EncodedToken = authenticationTokenCryptography.EncryptTokenToBase64(authenticationToken);
 
-			return new AuthenticationResult(encryptedBase64EncodedToken, user.UserId);
+			return new AuthenticationResult<TUser>(encryptedBase64EncodedToken, user);
 		}
 	}
 }
