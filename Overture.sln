@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overtute.Core.Web", "Overtu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.WebApi", "Overture.WebApi\Overture.WebApi.csproj", "{52234404-BB96-4F91-8B20-654F87A1646B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.T4.Helper", "Overture.T4.Helper\Overture.T4.Helper.csproj", "{9736F340-D5B1-4C55-BB3D-305F8C457BCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{52234404-BB96-4F91-8B20-654F87A1646B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52234404-BB96-4F91-8B20-654F87A1646B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52234404-BB96-4F91-8B20-654F87A1646B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
