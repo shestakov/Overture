@@ -52,11 +52,25 @@ namespace Overture.T4.Helper.DesignTimeCodeModel
 		{
 			return hierarchy
 				.SelectMany(
-					codeClass => codeClass.Children
-						.Cast<CodeElement>()
-						.Where(e => e.Kind == vsCMElement.vsCMElementProperty)
-						.Cast<CodeProperty>()
-						.Where(e => (e.Access & vsCMAccess.vsCMAccessPublic) != 0))
+					codeClass =>
+					{
+						IEnumerable<CodeElement> codeElements;
+
+						try
+						{
+							codeElements = codeClass.Children.OfType<CodeElement>();
+						}
+						catch (NotImplementedException)
+						{
+							//throw new Exception(string.Format("Could not extract children for class {0}", codeClass.FullName), ex);
+							codeElements = Enumerable.Empty<CodeElement>();
+						}
+
+						return codeElements
+							.Where(e => e.Kind == vsCMElement.vsCMElementProperty)
+							.Cast<CodeProperty>()
+							.Where(e => (e.Access & vsCMAccess.vsCMAccessPublic) != 0);
+					})
 				.Cast<CodeElement>()
 				.Select(p => new PropertyDefinition(p.Name, p.GetPropertyTypeName(), p.GetAttributes()))
 				.ToArray();

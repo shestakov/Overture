@@ -69,8 +69,8 @@ namespace Overture.T4.Helper.DesignTimeCodeModel
 		private static IEnumerable<CodeClass> GetHierarchy(IReadOnlyDictionary<string, CodeClass> codeClasses, CodeClass c)
 		{
 			var parents = c.Bases
-				.Cast<CodeClass>()
-				.Where(x => codeClasses.ContainsKey(x.FullName))  // only classes declared in this solution
+				.OfType<CodeClass>()
+				.Where(x => codeClasses.ContainsKey(x.FullName)) // only classes declared in this solution
 				.ToArray();
 				
 			var hierarchy = parents.SelectMany(c2  => GetHierarchy(codeClasses, c2));
