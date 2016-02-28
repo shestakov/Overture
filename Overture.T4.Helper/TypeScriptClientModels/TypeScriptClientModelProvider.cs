@@ -69,9 +69,17 @@ namespace Overture.T4.Helper.TypeScriptClientModels
 		private static bool IsArray(string type)
 		{
 			return type.StartsWith("System.Collections.Generic.IEnumerable<") ||
-				   type.StartsWith("System.Collections.Generic.List<") || type.StartsWith("System.Collections.Generic.IList<");
+				   type.StartsWith("System.Collections.Generic.List<") ||
+				   type.StartsWith("System.Collections.Generic.IList<") ||
+				   type.EndsWith("[]");
 
 		}
+
+		private static bool IsStringDictionary(string type)
+		{
+			return type.StartsWith("System.Collections.Generic.Dictionary<string, ");
+		}
+
 		private readonly string[] numberTypes = { "long", "int", "short", "decimal", "float", "double" };
 
 		private readonly string[] stringTypes = { "string", "System.Guid" };
@@ -91,24 +99,27 @@ namespace Overture.T4.Helper.TypeScriptClientModels
 			var normalizedType = SimplifyType(codeProperty.TypeName);
 
 			if (numberTypes.Contains(normalizedType))
-				return new TypeScriptClientModelPropertyType("number", false, false);
+				return new TypeScriptClientModelPropertyType("number", false, false, false);
 
 			if (stringTypes.Contains(normalizedType))
-				return new TypeScriptClientModelPropertyType("string", false, false);
+				return new TypeScriptClientModelPropertyType("string", false, false, false);
 
 			if (normalizedType == "bool")
-				return new TypeScriptClientModelPropertyType("boolean", false, false);
+				return new TypeScriptClientModelPropertyType("boolean", false, false, false);
 
 			if (enums.ContainsKey(normalizedType))
-				return new TypeScriptClientModelPropertyType(ShortName(normalizedType), false, false);
+				return new TypeScriptClientModelPropertyType(ShortName(normalizedType), false, false, false);
 
 			if (classes.ContainsKey(normalizedType))
-				return new TypeScriptClientModelPropertyType(ShortName(normalizedType), false, true);
+				return new TypeScriptClientModelPropertyType(ShortName(normalizedType), false, true, false);
 
 			if (IsArray(normalizedType))
-				return new TypeScriptClientModelPropertyType(GetTypeScriptTypeName(GetArrayBaseType(normalizedType)), true, false);
+				return new TypeScriptClientModelPropertyType(GetTypeScriptTypeName(GetArrayBaseType(normalizedType)), true, false, false);
 
-			return new TypeScriptClientModelPropertyType(string.Format("/** {0} **/ any", normalizedType), false, false);
+			if (IsStringDictionary(normalizedType))
+				return new TypeScriptClientModelPropertyType(GetTypeScriptTypeName(GetStringDictionaryType(normalizedType)), false, false, true);
+
+			return new TypeScriptClientModelPropertyType(string.Format("/** {0} **/ any", normalizedType), false, false, false);
 		}
 
 		private static string ShortName(string type)
@@ -123,6 +134,18 @@ namespace Overture.T4.Helper.TypeScriptClientModels
 		{
 			return type.EndsWith("?") ? type.Substring(0, type.Length - 1) : type;
 		}
+
+		private string GetStringDictionaryType(string type)
+		{
+			if (type.StartsWith("System.Collections.Generic.Dictionary<string, "))
+			{
+				var l = "System.Collections.Generic.Dictionary<string, ".Length;
+				return type.Substring(l, type.Length - l - 1);
+			}
+
+			return null;
+		}
+
 
 		private string GetArrayBaseType(string type)
 		{
@@ -145,6 +168,11 @@ namespace Overture.T4.Helper.TypeScriptClientModels
 			{
 				var l = "System.Collections.Generic.IList<".Length;
 				return type.Substring(l, type.Length - l - 1);
+			}
+
+			if (type.EndsWith("[]"))
+			{
+				return type.Substring(0, type.Length - 2);
 			}
 
 			return null;
