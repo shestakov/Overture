@@ -14,7 +14,7 @@ namespace Overture.T4.Helper.TypeScriptClientModels
 					c =>
 						new TypeScriptClientModelClass(ShortName(c.OriginalFullName), c.OriginalFullName, c.Source,
 							c.Properties.Select(
-								p => new TypeScriptClientModelProperty(GetTypeScriptPropertyName(p), GetMemberTypeScriptType(p)))))
+								p => new TypeScriptClientModelProperty(GetTypeScriptPropertyName(p), GetOriginalPropertyName(p), GetMemberTypeScriptType(p)))))
 				.ToArray();
 		}
 
@@ -64,6 +64,13 @@ namespace Overture.T4.Helper.TypeScriptClientModels
 			var name = property.Name;
 			var result = name.StartsWith("@") ? name.Substring(1) : name;
 			return result.Substring(0, 1).ToLowerInvariant() + result.Substring(1);
+		}
+
+		private static string GetOriginalPropertyName(PropertyDefinition property)
+		{
+			var name = property.Name;
+			var result = name.StartsWith("@") ? name.Substring(1) : name;
+			return result;
 		}
 
 		private static bool IsArray(string type)

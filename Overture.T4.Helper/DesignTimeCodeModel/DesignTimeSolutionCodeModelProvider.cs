@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using EnvDTE;
+using EnvDTE80;
 
 namespace Overture.T4.Helper.DesignTimeCodeModel
 {
@@ -19,7 +20,7 @@ namespace Overture.T4.Helper.DesignTimeCodeModel
 
 		public DesignTimeSolutionCodeModelProvider(object host)
 		{
-			var dte = (DTE) ((IServiceProvider) host).GetService(typeof (DTE));
+			var dte = (DTE2) ((IServiceProvider) host).GetService(typeof (DTE));
 			var codeClasses = new Dictionary<string, CodeClass>();
 
 			foreach (var item in GetAllProjectItems(dte))
@@ -48,7 +49,6 @@ namespace Overture.T4.Helper.DesignTimeCodeModel
 					}
 				}
 			}
-
 			classDictionary = GetClassDefinitions(codeClasses).ToDictionary(c => c.OriginalFullName, c => c);
 		}
 
@@ -97,7 +97,21 @@ namespace Overture.T4.Helper.DesignTimeCodeModel
 					.OfType<Project>()
 					.Where(p => p.Kind != Constants.vsProjectKindUnmodeled && p.FullName.EndsWith(".csproj"))
 					.ToArray();
+
 			return projects.SelectMany(project => project.ProjectItems.OfType<ProjectItem>().SelectMany(EnumerateProjectItem));
+		}
+
+		private IEnumerable<Project> GetProjects(Project project)
+		{
+			if (project.Kind == ProjectKinds.vsProjectKindSolutionFolder)
+			{
+				return project.ProjectItems
+					.Cast<ProjectItem>()
+					.Select(x => x.SubProject)
+					.Where(x => x != null)
+					.SelectMany(GetProjects);
+			}
+			return new[] { project };
 		}
 
 		private static IEnumerable<ProjectItem> EnumerateProjectItem(ProjectItem p)
