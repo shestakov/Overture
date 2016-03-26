@@ -33,6 +33,20 @@ namespace Overture.ChangeSets.Storage
 			return cachedObject;
 		}
 
+		public void Drop(Guid id)
+		{
+			object lockHandle;
+			var cachedObject = FindAndLock(id, TimeSpan.FromSeconds(30), out lockHandle);
+			if (cachedObject != null)
+			{
+				DropAndUnlock(id, lockHandle);
+			}
+			else
+			{
+				Unlock(id, lockHandle);
+			}
+		}
+
 		public CompositeObject FindAndLock(Guid id, TimeSpan lockTimeout, out object lockHandle)
 		{
 			for (int i = 0; i < repreatCount; i++)
@@ -109,6 +123,31 @@ namespace Overture.ChangeSets.Storage
 				}
 			}
 		}
+
+		public void DropAndUnlock(Guid id, object lockHandle)
+		{
+			var utcNow = DateTimeOffset.UtcNow;
+			lock (localStorage)
+			{
+				lock (globalStorage)
+				{
+					if (!globalStorage.ContainsKey(id))
+						return;
+
+					var cacheObject = globalStorage[id];
+
+					if (cacheObject.LockHandle != (Guid)lockHandle)
+						throw new ArgumentException("Incorrect lock");
+
+					if (cacheObject.ExpirationDateTime < utcNow)
+						throw new ArgumentException("Lock expired");
+
+					globalStorage.Remove(id);
+					localStorage.Remove(id);
+				}
+			}
+		}
+
 
 		public void Unlock(Guid id, object lockHandle)
 		{
