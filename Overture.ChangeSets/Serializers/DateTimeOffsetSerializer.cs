@@ -11,7 +11,7 @@ namespace Overture.ChangeSets.Serializers
 
 		protected override byte[] SerializeInternal(string name, Type type, DateTimeOffset value)
 		{
-			return BitConverter.GetBytes(value.Ticks);
+			return BitConverter.GetBytes(value.UtcTicks);
 		}
 
 		protected override DateTimeOffset DeserializeInternal(string name, Type type, byte[] serializedValue)
