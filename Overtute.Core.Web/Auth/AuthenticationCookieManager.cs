@@ -32,7 +32,7 @@ namespace Overtute.Core.Web.Auth
 
 		private static void SetTokenCookie(HttpContextBase context, string cookieName, string base64EncodedToken, string domain, bool rememberMe)
 		{
-			var expires = rememberMe ? DateTime.UtcNow.AddDays(7) : (DateTime?) null;
+			var expires = rememberMe ? DateTime.UtcNow.AddDays(30) : (DateTime?) null;
 			var cookie = CreateTokenCookie(cookieName, base64EncodedToken, expires, domain);
 			//cookie.Secure = true;
 			context.Response.SetCookie(cookie);

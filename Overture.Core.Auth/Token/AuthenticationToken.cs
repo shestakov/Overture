@@ -38,6 +38,6 @@ namespace Overture.Core.Auth.Token
 			return new AuthenticationToken(new Guid(userId), new DateTime(BitConverter.ToInt64(token, 16), DateTimeKind.Utc));
 		}
 
-		private static readonly TimeSpan authenticationTokenValidityPeriod = new TimeSpan(7, 0, 0, 0);
+		private static readonly TimeSpan authenticationTokenValidityPeriod = new TimeSpan(30, 0, 0, 0);
 	}
 }
