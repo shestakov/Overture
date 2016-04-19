@@ -102,23 +102,25 @@ namespace Overture.ChangeSets.Storage
 		public void PutAndUnlock(CompositeObject compositeObject, object lockHandle)
 		{
 			var utcNow = DateTimeOffset.UtcNow;
-			lock (localStorage)
+			lock (globalStorage)
 			{
-				lock (globalStorage)
+
+				if (!globalStorage.ContainsKey(compositeObject.Id))
+					throw new ArgumentException("There is no such CompositeObject in cache");
+
+				var cacheObject = globalStorage[compositeObject.Id];
+
+				if (cacheObject.LockHandle != (Guid) lockHandle)
+					throw new ArgumentException("Incorrect lock");
+
+				if (cacheObject.ExpirationDateTime < utcNow)
+					throw new ArgumentException("Lock expired");
+
+				var bytes = compositeObject.Serialize();
+				globalStorage[compositeObject.Id] = new CacheObject(bytes, null, null);
+
+				lock (localStorage)
 				{
-					if (!globalStorage.ContainsKey(compositeObject.Id))
-						throw new ArgumentException("There is no such CompositeObject in cache");
-
-					var cacheObject = globalStorage[compositeObject.Id];
-
-					if(cacheObject.LockHandle != (Guid)lockHandle)
-						throw new ArgumentException("Incorrect lock");
-
-					if (cacheObject.ExpirationDateTime < utcNow)
-						throw new ArgumentException("Lock expired");
-
-					var bytes = compositeObject.Serialize();
-					globalStorage[compositeObject.Id] = new CacheObject(bytes, null, null);
 					localStorage[compositeObject.Id] = compositeObject;
 				}
 			}
@@ -127,22 +129,24 @@ namespace Overture.ChangeSets.Storage
 		public void DropAndUnlock(Guid id, object lockHandle)
 		{
 			var utcNow = DateTimeOffset.UtcNow;
-			lock (localStorage)
+			lock (globalStorage)
 			{
-				lock (globalStorage)
+
+				if (!globalStorage.ContainsKey(id))
+					return;
+
+				var cacheObject = globalStorage[id];
+
+				if (cacheObject.LockHandle != (Guid) lockHandle)
+					throw new ArgumentException("Incorrect lock");
+
+				if (cacheObject.ExpirationDateTime < utcNow)
+					throw new ArgumentException("Lock expired");
+
+				globalStorage.Remove(id);
+
+				lock (localStorage)
 				{
-					if (!globalStorage.ContainsKey(id))
-						return;
-
-					var cacheObject = globalStorage[id];
-
-					if (cacheObject.LockHandle != (Guid)lockHandle)
-						throw new ArgumentException("Incorrect lock");
-
-					if (cacheObject.ExpirationDateTime < utcNow)
-						throw new ArgumentException("Lock expired");
-
-					globalStorage.Remove(id);
 					localStorage.Remove(id);
 				}
 			}
