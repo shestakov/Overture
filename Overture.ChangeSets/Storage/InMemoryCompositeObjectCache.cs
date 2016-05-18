@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Overture.ChangeSets.BusinessObjects;
 using Overture.ChangeSets.DefinitionProvider;
@@ -21,14 +22,23 @@ namespace Overture.ChangeSets.Storage
 
 		public CompositeObject Find(Guid id)
 		{
+			CompositeObject cachedObject = null;
+
+			Trace.WriteLine("InMemoryCompositeObjectCache.Find: locking localStorage");
+
 			lock (localStorage)
 			{
 				if (localStorage.ContainsKey(id))
-					return localStorage[id];
+					cachedObject = localStorage[id];
 			}
 
+			Trace.WriteLine("InMemoryCompositeObjectCache.Find: localStorage lock released");
+
+			if(cachedObject != null)
+				return cachedObject;
+
 			object lockHandle;
-			var cachedObject = FindAndLock(id, TimeSpan.FromSeconds(30), out lockHandle);
+			cachedObject = FindAndLock(id, TimeSpan.FromSeconds(30), out lockHandle);
 			Unlock(id, lockHandle);
 			return cachedObject;
 		}
@@ -67,6 +77,10 @@ namespace Overture.ChangeSets.Storage
 
 		private CompositeObject FindAndLockInternal(Guid id, TimeSpan lockTimeout, out object lockHandle)
 		{
+			Trace.WriteLine("InMemoryCompositeObjectCache.FindAndLockInternal: locking globalStorage");
+
+			CompositeObject compositeObject;
+
 			lock (globalStorage)
 			{
 				var utcNow = DateTimeOffset.UtcNow;
@@ -86,24 +100,32 @@ namespace Overture.ChangeSets.Storage
 
 				globalStorage[id] = new CacheObject(cacheObject.Bytes, handle, expirationDateTime);
 
-				var compositeObject = cacheObject.Bytes != null
+				compositeObject = cacheObject.Bytes != null
 					? new CompositeObject(cacheObject.Bytes, businessObjectDefinitionProvider)
 					: null;
+
+				Trace.WriteLine("InMemoryCompositeObjectCache.FindAndLockInternal: locking localStorage");
 
 				lock (localStorage)
 				{
 					localStorage[id] = compositeObject;
 				}
 
-				return compositeObject;
+				Trace.WriteLine("InMemoryCompositeObjectCache.FindAndLockInternal: localStorage lock released");
 			}
+
+			Trace.WriteLine("InMemoryCompositeObjectCache.FindAndLockInternal: globalStorage lock released");
+
+			return compositeObject;
 		}
 
 		public void PutAndUnlock(CompositeObject compositeObject, object lockHandle)
 		{
 			var utcNow = DateTimeOffset.UtcNow;
-			lock (globalStorage)
-			{
+
+			Trace.WriteLine("InMemoryCompositeObjectCache.PutAndUnlock: locking globalStorage");
+
+			lock (globalStorage){
 
 				if (!globalStorage.ContainsKey(compositeObject.Id))
 					throw new ArgumentException("There is no such CompositeObject in cache");
@@ -119,19 +141,25 @@ namespace Overture.ChangeSets.Storage
 				var bytes = compositeObject.Serialize();
 				globalStorage[compositeObject.Id] = new CacheObject(bytes, null, null);
 
+				Trace.WriteLine("InMemoryCompositeObjectCache.PutAndUnlock: locking localStorage");
+
 				lock (localStorage)
 				{
 					localStorage[compositeObject.Id] = compositeObject;
 				}
+
+				Trace.WriteLine("InMemoryCompositeObjectCache.PutAndUnlock: localStorage lock released");
 			}
+
+			Trace.WriteLine("InMemoryCompositeObjectCache.PutAndUnlock: globalStorage lock released");
 		}
 
 		public void DropAndUnlock(Guid id, object lockHandle)
 		{
 			var utcNow = DateTimeOffset.UtcNow;
+			Trace.WriteLine("InMemoryCompositeObjectCache.DropAndUnlock: locking globalStorage");
 			lock (globalStorage)
 			{
-
 				if (!globalStorage.ContainsKey(id))
 					return;
 
@@ -145,17 +173,21 @@ namespace Overture.ChangeSets.Storage
 
 				globalStorage.Remove(id);
 
+				Trace.WriteLine("InMemoryCompositeObjectCache.DropAndUnlock: locking localStorage"); 
 				lock (localStorage)
 				{
 					localStorage.Remove(id);
 				}
+				Trace.WriteLine("InMemoryCompositeObjectCache.DropAndUnlock: localStorage lock released");
 			}
+			Trace.WriteLine("InMemoryCompositeObjectCache.DropAndUnlock: globalStorage lock released");
 		}
 
 
 		public void Unlock(Guid id, object lockHandle)
 		{
 			var utcNow = DateTimeOffset.UtcNow;
+			Trace.WriteLine("InMemoryCompositeObjectCache.Unlock: locking globalStorage");
 			lock (globalStorage)
 			{
 				if (!globalStorage.ContainsKey(id))
@@ -171,6 +203,7 @@ namespace Overture.ChangeSets.Storage
 
 				globalStorage[id] = new CacheObject(cacheObject.Bytes, null, null);
 			}
+			Trace.WriteLine("InMemoryCompositeObjectCache.Unlock: globalStorage lock released");
 		}
 
 		private class CacheObject
