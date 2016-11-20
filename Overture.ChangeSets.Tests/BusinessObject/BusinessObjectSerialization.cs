@@ -24,6 +24,8 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 			var compositeObjectTypeId = new Guid("B6B586E1-8D7A-46EF-B5F3-BE68A9B4D79C");
 			var simpleObjectTypeId1 = new Guid("F73A4A18-C06F-4DCD-A521-FEA2D42B57F3");
 			var simpleObjectTypeId2 = new Guid("3DAE0268-F85B-47BA-9A0E-33EFED9ADAB2");
+			var userId = new Guid("AD8C3E44-3A3E-452E-ACEC-8E224C4702D5");
+			var changeSetId = new Guid("65ABF599-10D1-41DD-90B4-EAB1B0691881");
 
 			var stringAttribute = new AttributeDefinition("StringAttribute", typeof(string), new StringSerializer());
 			const string stringAttributeValue = "TEST";
@@ -68,7 +70,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				{ int32Attribute, int32AttributeValue }
 			};
 
-			var simpleObject1 = new SimpleObject(simpleObjectId1, null, simpleObjectAttributes1, simpleObjectDefinition1);
+			var simpleObject1 = new SimpleObject(simpleObjectId1, null, simpleObjectAttributes1, simpleObjectDefinition1, userId, new DateTimeOffset(), changeSetId);
 
 			var simpleObjectId2 = new Guid("670FEED5-726F-43F8-896F-0F1C598F7A0F");
 			var simpleObjectAttributes2 = new Dictionary<AttributeDefinition, object>
@@ -76,11 +78,11 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				{ int32Attribute, int32AttributeValue },
 				{ stringAttribute, stringAttributeValue }
 			};
-			var simpleObject2 = new SimpleObject(simpleObjectId2, simpleObjectId1, simpleObjectAttributes2, simpleObjectDefinition2);
+			var simpleObject2 = new SimpleObject(simpleObjectId2, simpleObjectId1, simpleObjectAttributes2, simpleObjectDefinition2, userId, new DateTimeOffset(), changeSetId);
 
 			var simpleObjects = new[] { simpleObject1, simpleObject2 };
 			var compositeObject = new CompositeObject(id, compositeObjectTypeId, new DateTimeOffset(), Guid.NewGuid(), businessObjectDefinitionProvider,
-				attributeValues, Enumerable.Empty<Guid>(), simpleObjects);
+				attributeValues, Enumerable.Empty<Guid>(), simpleObjects, userId, userId, new DateTimeOffset());
 
 			var serializedObject = compositeObject.Serialize();
 
@@ -120,6 +122,8 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 			var id = new Guid("452EED4D-F32D-4A2A-8509-3555F860DACB");
 			var simpleObjectTypeId = new Guid(CompositeObjectTestData.StaticSimpleObjectTypeId);
 			Guid? parentId = new Guid("3D73633B-2ABF-4210-9227-0B2FA626E6E6");
+			var userId = new Guid("35BC092C-F443-4E41-A199-A89475C496A6");
+			var changeSetId = new Guid("65ABF599-10D1-41DD-90B4-EAB1B0691881");
 			
 			var stringAttribute = new AttributeDefinition("StringAttribute", typeof(string), new StringSerializer());
 			const string stringAttributeValue = "TEST";
@@ -139,7 +143,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId))
 				.Return(simpleObjectDefinition);
 
-			var simpleObject = new SimpleObject(id, parentId, simpleObjectAttributes, simpleObjectDefinition);
+			var simpleObject = new SimpleObject(id, parentId, simpleObjectAttributes, simpleObjectDefinition, userId, new DateTimeOffset(), changeSetId);
 
 			var serializedObject = simpleObject.Serialize();
 

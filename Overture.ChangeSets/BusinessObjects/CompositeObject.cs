@@ -22,20 +22,18 @@ namespace Overture.ChangeSets.BusinessObjects
 		public readonly ReadOnlyDictionary<Guid, SimpleObject> SimpleObjects;
 		private readonly HashSet<Guid> appliedChangeSets = new HashSet<Guid>();
 		private readonly Dictionary<AttributeDefinition, object> attributes = new Dictionary<AttributeDefinition, object>();
-
-		private readonly List<CompositeObjectChangeSetExceptionRecord> complexObjectChangeSetExceptions =
-			new List<CompositeObjectChangeSetExceptionRecord>(0);
-
+		private readonly List<CompositeObjectChangeSetExceptionRecord> complexObjectChangeSetExceptions = new List<CompositeObjectChangeSetExceptionRecord>(0);
 		private readonly List<SimpleObjectChangeSetExceptionRecord> simpleObjectChangeSetExceptions = new List<SimpleObjectChangeSetExceptionRecord>(0);
 		private readonly Dictionary<Guid, SimpleObject> simpleObjects = new Dictionary<Guid, SimpleObject>();
-		private CompositeObjectDefinition compositeObjectDefinition;
+		private readonly CompositeObjectDefinition compositeObjectDefinition;
 
-		public CompositeObject(Guid id, Guid compositeObjectTypeId, DateTimeOffset lastModified, Guid revision,
-			IBusinessObjectDefinitionProvider definitionProvider, IDictionary<AttributeDefinition, object> attributeValues, IEnumerable<Guid> appliedChangeSets,
-			IEnumerable<SimpleObject> simpleObjects)
+		public CompositeObject(Guid id, Guid compositeObjectTypeId, DateTimeOffset lastModified, Guid revision, IBusinessObjectDefinitionProvider definitionProvider, IDictionary<AttributeDefinition, object> attributeValues, IEnumerable<Guid> appliedChangeSets, IEnumerable<SimpleObject> simpleObjects, Guid createdByUserId, Guid lastUpdatedByUserId, DateTimeOffset dateTimeCreated)
 		{
 			Id = id;
 			CompositeObjectTypeId = compositeObjectTypeId;
+			CreatedByUserId = createdByUserId;
+			LastUpdatedByUserId = lastUpdatedByUserId;
+			DateTimeCreated = dateTimeCreated;
 			LastModified = lastModified;
 			Revision = revision;
 			compositeObjectDefinition = definitionProvider.GetCompositeObjectDefinition(compositeObjectTypeId);
@@ -62,7 +60,15 @@ namespace Overture.ChangeSets.BusinessObjects
 			foreach(var changeSet in changeSets)
 			{
 				if(compositeObjectDefinition == null)
-					Initialize(definitionProvider, (CreateCompositeObjectChangeSet) changeSet);
+				{
+					var changeSetCreate = (CreateCompositeObjectChangeSet) changeSet;
+					Id = changeSetCreate.CompositeObjectId;
+					CompositeObjectTypeId = changeSetCreate.CompositeObjectTypeId;
+					compositeObjectDefinition = definitionProvider.GetCompositeObjectDefinition(CompositeObjectTypeId);
+					var changeSetUserId = changeSetCreate.UserId ?? Guid.Empty; // TODO: a hack, changeSet.UserId should not be nullable
+					CreatedByUserId = changeSetUserId;
+					DateTimeCreated = new DateTimeOffset(changeSetCreate.Timestamp, new TimeSpan(0));
+				}
 
 				try
 				{
@@ -88,7 +94,10 @@ namespace Overture.ChangeSets.BusinessObjects
 			var header = Serializer.DeserializeWithLengthPrefix<CompositeObjectHeader>(stream, PrefixStyle.Base128, 1);
 			Id = header.Id;
 			CompositeObjectTypeId = header.CompositeObjectTypeId;
-			LastModified = new DateTimeOffset(header.LastModified, new TimeSpan(0));
+			CreatedByUserId = header.CreatedByUserId;
+			DateTimeCreated = new DateTimeOffset(header.DateTimeCreated, new TimeSpan(0));
+			LastUpdatedByUserId = header.LastUpdatedByUserId;
+			LastModified = new DateTimeOffset(header.DateTimeLastUpdated, new TimeSpan(0));
 			Revision = header.Revision;
 
 			compositeObjectDefinition = businessObjectDefinitionProvider.GetCompositeObjectDefinition(CompositeObjectTypeId);
@@ -115,10 +124,13 @@ namespace Overture.ChangeSets.BusinessObjects
 			SimpleObjects = new ReadOnlyDictionary<Guid, SimpleObject>(simpleObjects);
 		}
 
-		public Guid Id { get; private set; }
-		public Guid CompositeObjectTypeId { get; private set; }
+		public Guid Id { get; }
+		public Guid CompositeObjectTypeId { get; }
+		public DateTimeOffset DateTimeCreated { get; }
+		public Guid CreatedByUserId { get; }
 		public DateTimeOffset LastModified { get; private set; }
 		public Guid Revision { get; private set; }
+		public Guid LastUpdatedByUserId { get; private set; }
 
 		public Dictionary<Guid, SimpleObject> GetSimpleObjectsOfType<T>()
 		{
@@ -156,13 +168,6 @@ namespace Overture.ChangeSets.BusinessObjects
 				.ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
-		private void Initialize(IBusinessObjectDefinitionProvider definitionProvider, CreateCompositeObjectChangeSet changeSetCreate)
-		{
-			Id = changeSetCreate.CompositeObjectId;
-			CompositeObjectTypeId = changeSetCreate.CompositeObjectTypeId;
-			compositeObjectDefinition = definitionProvider.GetCompositeObjectDefinition(CompositeObjectTypeId);
-		}
-
 		/// <summary>
 		/// Applying a changeset. This method is NOT thread safe.
 		/// </summary>
@@ -183,8 +188,9 @@ namespace Overture.ChangeSets.BusinessObjects
 			}
 
 			var lastModified = new DateTimeOffset(changeSet.Timestamp, new TimeSpan(0));
+			var changeSetUserId = changeSet.UserId ?? Guid.Empty; // TODO: a hack, changeSet.UserId should not be nullable
 
-			foreach(var simpleObjectChangeSet in changeSet.ChildObjectChangeSets)
+			foreach (var simpleObjectChangeSet in changeSet.ChildObjectChangeSets)
 			{
 				if(simpleObjectChangeSet.Action == SimpleObjectChangeSetType.Delete && simpleObjects.ContainsKey(simpleObjectChangeSet.SimpleObjectId))
 				{
@@ -212,7 +218,7 @@ namespace Overture.ChangeSets.BusinessObjects
 						if (simpleObjectDefinition == null)
 							continue;
 
-						simpleObject = new SimpleObject(commandCreate.SimpleObjectId, commandCreate.ParentId, simpleObjectDefinition);
+						simpleObject = new SimpleObject(commandCreate.SimpleObjectId, commandCreate.ParentId, simpleObjectDefinition, changeSetUserId, lastModified, changeSet.ChangeSetId);
 					}
 					else if (simpleObjects.ContainsKey(simpleObjectChangeSet.SimpleObjectId))
 					{
@@ -226,7 +232,7 @@ namespace Overture.ChangeSets.BusinessObjects
 
 					try
 					{
-						simpleObject.ApplyChangeSet(createOrUpdateSimpleObjectCommand, simpleObjectDefinition, changeSet.ChangeSetId, lastModified);
+						simpleObject.ApplyChangeSet(createOrUpdateSimpleObjectCommand, simpleObjectDefinition, changeSet.ChangeSetId, lastModified, changeSetUserId);
 					}
 					catch(Exception ex)
 					{
@@ -240,6 +246,7 @@ namespace Overture.ChangeSets.BusinessObjects
 
 			appliedChangeSets.Add(changeSet.ChangeSetId);
 			LastModified = lastModified;
+			LastUpdatedByUserId = changeSetUserId;
 			Revision = changeSet.ChangeSetId;
 		}
 
@@ -279,7 +286,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			var stream = new MemoryStream();
 			Serializer.SerializeWithLengthPrefix(stream,
 				new CompositeObjectHeader(Id, CompositeObjectTypeId, LastModified.Ticks, Revision, appliedChangeSets.ToArray(), attributes.Count,
-					simpleObjects.Count), PrefixStyle.Base128, 1);
+					simpleObjects.Count, DateTimeCreated.Ticks, CreatedByUserId, LastUpdatedByUserId), PrefixStyle.Base128, 1);
 
 			foreach(var attribute in attributes)
 			{

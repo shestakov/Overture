@@ -6,11 +6,14 @@ namespace Overture.ChangeSets.Protobuf.Headers
 	[ProtoContract(SkipConstructor = true)]
 	public class CompositeObjectHeader
 	{
-		public CompositeObjectHeader(Guid id, Guid compositeObjectTypeId, long lastModified, Guid revision, Guid[] appliedChangeSets, int attributeCount, int simpleObjectCount)
+		public CompositeObjectHeader(Guid id, Guid compositeObjectTypeId, long dateTimeLastUpdated, Guid revision, Guid[] appliedChangeSets, int attributeCount, int simpleObjectCount, long dateTimeCreated, Guid createdByUserId, Guid lastUpdatedByUserId)
 		{
 			Id = id;
 			CompositeObjectTypeId = compositeObjectTypeId;
-			LastModified = lastModified;
+			DateTimeCreated = dateTimeCreated;
+			CreatedByUserId = createdByUserId;
+			LastUpdatedByUserId = lastUpdatedByUserId;
+			DateTimeLastUpdated = dateTimeLastUpdated;
 			Revision = revision;
 			AppliedChangeSets = appliedChangeSets;
 			AttributeCount = attributeCount;
@@ -27,15 +30,24 @@ namespace Overture.ChangeSets.Protobuf.Headers
 		public Guid Revision { get; set; }
 		
 		[ProtoMember(4)]
-		public long LastModified { get; set; }
-
-		[ProtoMember(5)]
 		public Guid[] AppliedChangeSets { get; set; }
 
-		[ProtoMember(6)]
+		[ProtoMember(5)]
 		public int AttributeCount { get; set; }
 
-		[ProtoMember(7)]
+		[ProtoMember(6)]
 		public int SimpleObjectCount { get; set; }
+
+		[ProtoMember(7)]
+		public long DateTimeCreated { get; set; }
+
+		[ProtoMember(8)]
+		public Guid CreatedByUserId { get; set; }
+
+		[ProtoMember(9)]
+		public long DateTimeLastUpdated { get; set; }
+
+		[ProtoMember(10)]
+		public Guid LastUpdatedByUserId { get; set; }
 	}
 }

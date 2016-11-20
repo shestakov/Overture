@@ -18,17 +18,22 @@ namespace Overture.ChangeSets.BusinessObjects
 	{
 		private readonly Dictionary<AttributeDefinition, object> attributes = new Dictionary<AttributeDefinition, object>();
 		public readonly ReadOnlyDictionary<AttributeDefinition, object> Attributes;
-		public SimpleObjectDefinition SimpleObjectDefinition { get; private set; }
+		public SimpleObjectDefinition SimpleObjectDefinition { get; }
 
-		public SimpleObject(Guid id, Guid? parentId, [NotNull] SimpleObjectDefinition simpleObjectDefinition)
+		public SimpleObject(Guid id, Guid? parentId, [NotNull] SimpleObjectDefinition simpleObjectDefinition, Guid createdByUserId, DateTimeOffset dateTimeCreated, Guid revision)
 		{
 			if (simpleObjectDefinition == null)
-				throw new ArgumentNullException("simpleObjectDefinition");
+				throw new ArgumentNullException(nameof(simpleObjectDefinition));
 
 			Id = id;
 			SimpleObjectDefinition = simpleObjectDefinition;
 			ParentId = parentId;
 			Attributes = new ReadOnlyDictionary<AttributeDefinition, object>(attributes);
+			CreatedByUserId = createdByUserId;
+			DateTimeCreated = dateTimeCreated;
+			LastUpdatedByUserId = createdByUserId;
+			DateTimeLastUpdated = dateTimeCreated;
+			Revision = revision;
 		}
 
 		public SimpleObject(byte[] serializedObject, IBusinessObjectDefinitionProvider businessObjectDefinitionProvider)
@@ -41,9 +46,14 @@ namespace Overture.ChangeSets.BusinessObjects
 			Revision = header.Revision;
 			var simpleObjectTypeId = header.SimpleObjectTypeId;
 
+			CreatedByUserId = header.CreatedByUserId;
+			DateTimeCreated = new DateTimeOffset(header.DateTimeCreated, new TimeSpan(0));
+			LastUpdatedByUserId = header.LastUpdatedByUserId;
+			DateTimeLastUpdated = new DateTimeOffset(header.DateTimeLastUpdated, new TimeSpan(0));
+
 			SimpleObjectDefinition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(simpleObjectTypeId);
 			if(SimpleObjectDefinition == null)
-				throw new Exception(string.Format("SimpleObject type {0} not found", SimpleObjectTypeId));
+				throw new Exception($"SimpleObject type {SimpleObjectTypeId} not found");
 
 			var attributeValues = Serializer.DeserializeItems<AttributeValue>(stream, PrefixStyle.Base128, 2);
 			foreach(var attribute in attributeValues)
@@ -59,8 +69,8 @@ namespace Overture.ChangeSets.BusinessObjects
 			Attributes = new ReadOnlyDictionary<AttributeDefinition, object>(attributes);
 		}
 
-		public SimpleObject(Guid id, Guid? parentId, IDictionary<AttributeDefinition, object> attributes, [NotNull] SimpleObjectDefinition simpleObjectDefinition)
-			: this(id, parentId, simpleObjectDefinition)
+		public SimpleObject(Guid id, Guid? parentId, IDictionary<AttributeDefinition, object> attributes, [NotNull] SimpleObjectDefinition simpleObjectDefinition, Guid createdByUserId, DateTimeOffset dateTimeCreated, Guid revision)
+			: this(id, parentId, simpleObjectDefinition, createdByUserId, dateTimeCreated, revision)
 		{
 			this.attributes = new Dictionary<AttributeDefinition, object>(attributes);
 			Attributes = new ReadOnlyDictionary<AttributeDefinition, object>(attributes);
@@ -99,7 +109,10 @@ namespace Overture.ChangeSets.BusinessObjects
 		public Guid Id { get; private set; }
 		public Guid? ParentId { get; private set; }
 		public Guid Revision { get; private set; }
-		public DateTimeOffset LastModified { get; private set; }
+		public DateTimeOffset DateTimeCreated { get; }
+		public DateTimeOffset DateTimeLastUpdated { get; private set; }
+		public Guid CreatedByUserId { get; }
+		public Guid LastUpdatedByUserId { get; private set; }
 
 		public Guid SimpleObjectTypeId
 		{
@@ -111,7 +124,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			ParentId = parentId;
 		}
 
-		public void ApplyChangeSet(CreateOrUpdateSimpleObjectChangeSet changeSet, SimpleObjectDefinition definition, Guid revision, DateTimeOffset lastModified)
+		public void ApplyChangeSet(CreateOrUpdateSimpleObjectChangeSet changeSet, SimpleObjectDefinition definition, Guid revision, DateTimeOffset lastModified, Guid updatedByUserId)
 		{
 			foreach(var modification in changeSet.AttributeValues)
 			{
@@ -123,13 +136,14 @@ namespace Overture.ChangeSets.BusinessObjects
 			}
 
 			Revision = revision;
-			LastModified = lastModified;
+			DateTimeLastUpdated = lastModified;
+			LastUpdatedByUserId = updatedByUserId;
 		}
 
 		public byte[] Serialize()
 		{
 			var stream = new MemoryStream();
-			Serializer.SerializeWithLengthPrefix(stream, new SimpleObjectHeader(Id, SimpleObjectTypeId, ParentId, Revision), PrefixStyle.Base128, 1);
+			Serializer.SerializeWithLengthPrefix(stream, new SimpleObjectHeader(Id, SimpleObjectTypeId, ParentId, Revision, DateTimeCreated.Ticks, CreatedByUserId, DateTimeLastUpdated.Ticks, LastUpdatedByUserId), PrefixStyle.Base128, 1);
 			foreach(var attribute in attributes)
 			{
 				var definition = attribute.Key;
