@@ -25,7 +25,7 @@ namespace Overture.ChangeSets.Tests.DefinitionProvider
 			var provider = Resolve<BusinessObjectDefinitionProvider>();
 			var compositeObjectTypeId = Guid.NewGuid();
 			Assert.Throws<ArgumentException>(() => provider.GetCompositeObjectDefinition(compositeObjectTypeId),
-				string.Format("CompositeObjectType {0} not found", compositeObjectTypeId));
+				$"CompositeObjectType {compositeObjectTypeId} not found");
 			Mocks.VerifyAll();
 		}
 
@@ -35,8 +35,9 @@ namespace Overture.ChangeSets.Tests.DefinitionProvider
 			RegisterMockTypeRetriever();
 			Mocks.ReplayAll();
 			var provider = Resolve<BusinessObjectDefinitionProvider>();
+			var compositeObjectTypeId = Guid.NewGuid();
 			var simpleObjectTypeId = Guid.NewGuid();
-			var definition = provider.FindSimpleObjectDefinition(simpleObjectTypeId);
+			var definition = provider.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId);
 			Assert.IsNull(definition);
 			Mocks.VerifyAll();
 		}

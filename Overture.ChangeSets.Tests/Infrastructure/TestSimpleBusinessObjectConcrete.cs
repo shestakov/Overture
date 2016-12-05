@@ -3,7 +3,7 @@ using Overture.ChangeSets.Attributes;
 
 namespace Overture.ChangeSets.Tests.Infrastructure
 {
-	[SimpleObject(CompositeObjectTestData.ConcreteSimpleObjectTypeId)]
+	[SimpleObject(CompositeObjectTestData.ConcreteCompositeObjectTypeId, CompositeObjectTestData.ConcreteSimpleObjectTypeId)]
 	internal class TestSimpleBusinessObjectConcrete
 	{
 		// ReSharper disable UnusedMember.Global

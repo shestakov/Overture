@@ -14,9 +14,9 @@ namespace Overture.ChangeSets.Tests.Infrastructure
 			provider = new BusinessObjectDefinitionProvider(new AttributeValueSerializerProvider(), new TestTypeRetriever());
 		}
 
-		public SimpleObjectDefinition FindSimpleObjectDefinition(Guid simpleObjectTypeId)
+		public SimpleObjectDefinition FindSimpleObjectDefinition(Guid compositeObjectTypeId, Guid simpleObjectTypeId)
 		{
-			return provider.FindSimpleObjectDefinition(simpleObjectTypeId);
+			return provider.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId);
 		}
 
 		public CompositeObjectDefinition FindCompositeObjectDefinition(Guid compositeObjectTypeId)

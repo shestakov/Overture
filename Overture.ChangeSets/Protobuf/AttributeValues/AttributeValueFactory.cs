@@ -66,11 +66,11 @@ namespace Overture.ChangeSets.Protobuf.AttributeValues
 			}
 			else if (simpleObjectAttribute != null)
 			{
-				definition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(simpleObjectAttribute.SimpleObjectTypeId);
+				definition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(simpleObjectAttribute.CompositeObjectTypeId, simpleObjectAttribute.SimpleObjectTypeId);
 			}
 			else
 			{
-				throw new ArgumentException(string.Format("Class {0} is not a business object", businessObjectType.FullName), "businessObjectType");
+				throw new ArgumentException($"Class {businessObjectType.FullName} is not a business object", nameof(businessObjectType));
 			}
 			
 			var properties = dataObject.GetType().GetProperties().ToDictionary(p => p.Name);

@@ -3,7 +3,7 @@ using Overture.ChangeSets.Attributes;
 
 namespace Overture.ChangeSets.Tests.Infrastructure
 {
-	[SimpleObject(CompositeObjectTestData.StaticSimpleObjectTypeId)]
+	[SimpleObject(CompositeObjectTestData.StaticCompositeObjectTypeId, CompositeObjectTestData.StaticSimpleObjectTypeId)]
 	internal static class TestSimpleBusinessObjectStatic
 	{
 #pragma warning disable 0649

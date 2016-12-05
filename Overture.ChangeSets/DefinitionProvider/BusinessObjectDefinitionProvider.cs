@@ -13,7 +13,7 @@ namespace Overture.ChangeSets.DefinitionProvider
 		private readonly IAttributeValueSerializerProvider serializerProvider;
 		private readonly ITypeRetriever typeRetriever;
 		private Dictionary<Guid, CompositeObjectDefinition> compositeObjectDefinitions;
-		private Dictionary<Guid, SimpleObjectDefinition> simpleObjectDefinitions;
+		private Dictionary<Guid, Dictionary<Guid, SimpleObjectDefinition>> simpleObjectDefinitions;
 
 		public BusinessObjectDefinitionProvider(IAttributeValueSerializerProvider serializerProvider, ITypeRetriever typeRetriever)
 		{
@@ -22,9 +22,13 @@ namespace Overture.ChangeSets.DefinitionProvider
 			Initialize();
 		}
 
-		public SimpleObjectDefinition FindSimpleObjectDefinition(Guid simpleObjectTypeId)
+		public SimpleObjectDefinition FindSimpleObjectDefinition(Guid compositeObjectTypeId, Guid simpleObjectTypeId)
 		{
-			return simpleObjectDefinitions.ContainsKey(simpleObjectTypeId) ? simpleObjectDefinitions[simpleObjectTypeId] : null;
+			return simpleObjectDefinitions.ContainsKey(compositeObjectTypeId)
+				? simpleObjectDefinitions[compositeObjectTypeId].ContainsKey(simpleObjectTypeId)
+					? simpleObjectDefinitions[compositeObjectTypeId][simpleObjectTypeId]
+					: null
+				: null;
 		}
 
 		public CompositeObjectDefinition FindCompositeObjectDefinition(Guid compositeObjectTypeId)
@@ -36,12 +40,12 @@ namespace Overture.ChangeSets.DefinitionProvider
 		{
 			if(compositeObjectDefinitions.ContainsKey(compositeObjectTypeId))
 				return compositeObjectDefinitions[compositeObjectTypeId];
-			throw new ArgumentException(string.Format("CompositeObjectType {0} not found", compositeObjectTypeId), "compositeObjectTypeId");
+			throw new ArgumentException($"CompositeObjectType {compositeObjectTypeId} not found", nameof(compositeObjectTypeId));
 		}
 
 		private void Initialize()
 		{
-			simpleObjectDefinitions = new Dictionary<Guid, SimpleObjectDefinition>();
+			simpleObjectDefinitions = new Dictionary<Guid, Dictionary<Guid, SimpleObjectDefinition>>();
 			compositeObjectDefinitions = new Dictionary<Guid, CompositeObjectDefinition>();
 
 			var types = typeRetriever.GetPublicTypesOfLoadedAssemblies();
@@ -50,8 +54,24 @@ namespace Overture.ChangeSets.DefinitionProvider
 				var simpleObjectAttribute = type.GetCustomAttribute<SimpleObjectAttribute>(true);
 				var compositeObjectAttribute = type.GetCustomAttribute<CompositeObjectAttribute>(true);
 
-				if(simpleObjectAttribute != null)
-					simpleObjectDefinitions.Add(simpleObjectAttribute.SimpleObjectTypeId, BuildSimpleObjectDefinition(simpleObjectAttribute.SimpleObjectTypeId, type));
+				if (simpleObjectAttribute != null)
+				{
+					if (simpleObjectDefinitions.ContainsKey(simpleObjectAttribute.CompositeObjectTypeId))
+						simpleObjectDefinitions[simpleObjectAttribute.CompositeObjectTypeId].Add(
+							simpleObjectAttribute.SimpleObjectTypeId,
+							BuildSimpleObjectDefinition(simpleObjectAttribute.SimpleObjectTypeId, type));
+					else
+					{
+						simpleObjectDefinitions.Add(simpleObjectAttribute.CompositeObjectTypeId,
+							new Dictionary<Guid, SimpleObjectDefinition>
+							{
+								{
+									simpleObjectAttribute.SimpleObjectTypeId,
+									BuildSimpleObjectDefinition(simpleObjectAttribute.SimpleObjectTypeId, type)
+								}
+							});
+					}
+				}
 
 				if(compositeObjectAttribute != null)
 					compositeObjectDefinitions.Add(compositeObjectAttribute.CompositeObjectTypeId,

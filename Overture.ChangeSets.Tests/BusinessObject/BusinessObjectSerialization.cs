@@ -45,14 +45,14 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 				.Expect(e => e.GetCompositeObjectDefinition(compositeObjectTypeId))
 				.Return(compositeObjectDefinition);
 			objectDefinitionProvider
-				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId1)).Return(simpleObjectDefinition1);
+				.Expect(e => e.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId1)).Return(simpleObjectDefinition1);
 			objectDefinitionProvider
-				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId2))
+				.Expect(e => e.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId2))
 				.Return(simpleObjectDefinition2);
 			objectDefinitionProvider
-				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId1)).Return(simpleObjectDefinition1);
+				.Expect(e => e.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId1)).Return(simpleObjectDefinition1);
 			objectDefinitionProvider
-				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId2))
+				.Expect(e => e.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId2))
 				.Return(simpleObjectDefinition2);
 
 			var businessObjectDefinitionProvider = Resolve<IBusinessObjectDefinitionProvider>();
@@ -120,6 +120,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 		public void Serialization_SimpleObject()
 		{
 			var id = new Guid("452EED4D-F32D-4A2A-8509-3555F860DACB");
+			var compositeObjectTypeId = new Guid(CompositeObjectTestData.StaticCompositeObjectTypeId);
 			var simpleObjectTypeId = new Guid(CompositeObjectTestData.StaticSimpleObjectTypeId);
 			Guid? parentId = new Guid("3D73633B-2ABF-4210-9227-0B2FA626E6E6");
 			var userId = new Guid("35BC092C-F443-4E41-A199-A89475C496A6");
@@ -140,7 +141,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 			var simpleObjectDefinition = new SimpleObjectDefinition(simpleObjectTypeId, new[] { stringAttribute, int32Attribute });
 
 			RegisterStrictMock<IBusinessObjectDefinitionProvider>()
-				.Expect(e => e.FindSimpleObjectDefinition(simpleObjectTypeId))
+				.Expect(e => e.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId))
 				.Return(simpleObjectDefinition);
 
 			var simpleObject = new SimpleObject(id, parentId, simpleObjectAttributes, simpleObjectDefinition, userId, new DateTimeOffset(), changeSetId);
@@ -149,7 +150,7 @@ namespace Overture.ChangeSets.Tests.BusinessObject
 
 			var businessObjectDefinitionProvider = Resolve<IBusinessObjectDefinitionProvider>();
 
-			var deserializedObject = new SimpleObject(serializedObject, businessObjectDefinitionProvider);
+			var deserializedObject = new SimpleObject(serializedObject, businessObjectDefinitionProvider, compositeObjectTypeId);
 
 			Assert.AreEqual(simpleObject.Id, deserializedObject.Id);
 			Assert.AreEqual(simpleObject.SimpleObjectTypeId, deserializedObject.SimpleObjectTypeId);

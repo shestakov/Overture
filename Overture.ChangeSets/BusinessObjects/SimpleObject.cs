@@ -36,7 +36,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			Revision = revision;
 		}
 
-		public SimpleObject(byte[] serializedObject, IBusinessObjectDefinitionProvider businessObjectDefinitionProvider)
+		public SimpleObject(byte[] serializedObject, IBusinessObjectDefinitionProvider businessObjectDefinitionProvider, Guid compositeObjectTypeId)
 		{
 			var stream = new MemoryStream(serializedObject);
 
@@ -51,7 +51,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			LastUpdatedByUserId = header.LastUpdatedByUserId;
 			DateTimeLastUpdated = new DateTimeOffset(header.DateTimeLastUpdated, new TimeSpan(0));
 
-			SimpleObjectDefinition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(simpleObjectTypeId);
+			SimpleObjectDefinition = businessObjectDefinitionProvider.FindSimpleObjectDefinition(compositeObjectTypeId, simpleObjectTypeId);
 			if(SimpleObjectDefinition == null)
 				throw new Exception($"SimpleObject type {SimpleObjectTypeId} not found");
 

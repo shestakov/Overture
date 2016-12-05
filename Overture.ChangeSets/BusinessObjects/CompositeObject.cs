@@ -116,7 +116,7 @@ namespace Overture.ChangeSets.BusinessObjects
 			for(var i = 0; i < header.SimpleObjectCount; i++)
 			{
 				var serializedSimpleObject = Serializer.DeserializeWithLengthPrefix<byte[]>(stream, PrefixStyle.Base128, 3);
-				var simpleObject = new SimpleObject(serializedSimpleObject, businessObjectDefinitionProvider);
+				var simpleObject = new SimpleObject(serializedSimpleObject, businessObjectDefinitionProvider, CompositeObjectTypeId);
 				simpleObjects.Add(simpleObject.Id, simpleObject);
 			}
 
@@ -214,7 +214,7 @@ namespace Overture.ChangeSets.BusinessObjects
 					{
 						var commandCreate = (CreateSimpleObjectChangeSet) simpleObjectChangeSet;
 						
-						simpleObjectDefinition = definitionProvider.FindSimpleObjectDefinition(commandCreate.SimpleObjectType);
+						simpleObjectDefinition = definitionProvider.FindSimpleObjectDefinition(CompositeObjectTypeId, commandCreate.SimpleObjectType);
 						if (simpleObjectDefinition == null)
 							continue;
 
