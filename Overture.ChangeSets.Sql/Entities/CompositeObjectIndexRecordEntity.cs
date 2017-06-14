@@ -17,5 +17,8 @@ namespace Overture.ChangeSets.Sql.Entities
 
 		[Column]
 		public DateTimeOffset DateTimeCreated { get; set; }
+
+		[Column]
+		public DateTimeOffset? DateTimeDeleted { get; set; }
 	}
 }

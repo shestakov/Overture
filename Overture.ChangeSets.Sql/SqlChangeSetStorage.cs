@@ -49,6 +49,20 @@ namespace Overture.ChangeSets.Sql
 			}
 		}
 
+		public void UpdateChangeSet(CompositeObjectChangeSet changeSet, bool yesIKnowWhatIAmDoing = false)
+		{
+			if(!yesIKnowWhatIAmDoing)
+				throw new Exception("You must know what are you doing!");
+
+			var entity = ToEntity(changeSet);
+			using (var context = GetDataContext())
+			{
+				context.GetTable<CompositeObjectChangeSetEntity>().Attach(entity);
+				context.Refresh(RefreshMode.KeepCurrentValues, entity);
+				context.SubmitChanges();
+			}
+		}
+
 		private static CompositeObjectChangeSetEntity ToEntity(CompositeObjectChangeSet changeSet)
 		{
 			var stream = new MemoryStream();

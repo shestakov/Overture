@@ -33,5 +33,15 @@ namespace Overture.ChangeSets.Storage
 				? changeSets.Values.Where(changeSet => changeSet.Timestamp > sinceTimestamp).OrderBy(c => c.Timestamp)
 				: Enumerable.Empty<CompositeObjectChangeSet>();
 		}
+
+		public void UpdateChangeSet(CompositeObjectChangeSet changeSet, bool yesIKnowWhatIAmDoing = false)
+		{
+			if (!yesIKnowWhatIAmDoing)
+				throw new Exception("You must know what are you doing!");
+
+			var compositeObjectId = changeSet.CompositeObjectId;
+			var compositeObjectChangeSets = changeSetsByCompositeObjects[compositeObjectId];
+			compositeObjectChangeSets.TryUpdate(compositeObjectId, changeSet, changeSet);
+		}
 	}
 }

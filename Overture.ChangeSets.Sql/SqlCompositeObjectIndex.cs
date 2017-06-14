@@ -42,7 +42,7 @@ namespace Overture.ChangeSets.Sql
 			using (var context = GetDataContext())
 			{
 				return context.GetTable<CompositeObjectIndexRecordEntity>()
-					.Where(e => e.OwnerId == ownerId && e.CompositeObjectTypeId == compositeObjectTypeId)
+					.Where(e => e.OwnerId == ownerId && e.CompositeObjectTypeId == compositeObjectTypeId && e.DateTimeDeleted == null)
 					.Select(e => e.CompositeObjectId)
 					.ToArray();
 			}
@@ -53,7 +53,7 @@ namespace Overture.ChangeSets.Sql
 			using (var context = GetDataContext())
 			{
 				return context.GetTable<CompositeObjectIndexRecordEntity>()
-					.Where(e => e.CompositeObjectTypeId == compositeObjectTypeId)
+					.Where(e => e.CompositeObjectTypeId == compositeObjectTypeId && e.DateTimeDeleted == null)
 					.Select(e => e.CompositeObjectId)
 					.ToArray();
 			}

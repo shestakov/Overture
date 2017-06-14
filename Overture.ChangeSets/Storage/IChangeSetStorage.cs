@@ -9,5 +9,6 @@ namespace Overture.ChangeSets.Storage
 		void AppendChangeSet(CompositeObjectChangeSet changeSet);
 		IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId);
 		IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId, long sinceTimestamp);
+		void UpdateChangeSet(CompositeObjectChangeSet changeSet, bool yesIKnowWhatIAmDoing = false);
 	}
 }
