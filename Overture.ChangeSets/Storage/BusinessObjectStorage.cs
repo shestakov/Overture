@@ -14,6 +14,7 @@ namespace Overture.ChangeSets.Storage
 		private readonly IChangeSetStorage changeSetStorage;
 		private readonly ICompositeObjectIndex compositeObjectIndex;
 		private readonly ICompositeObjectCache compositeObjectCache;
+		private TimeSpan lockTimespan = TimeSpan.FromSeconds(90);
 
 		public BusinessObjectStorage(IChangeSetStorage changeSetStorage, ICompositeObjectIndex compositeObjectIndex,
 			IBusinessObjectDefinitionProvider businessObjectDefinitionProvider, ICompositeObjectCache compositeObjectCache)
@@ -35,7 +36,7 @@ namespace Overture.ChangeSets.Storage
 			var compositeObjectId = changeSet.CompositeObjectId;
 			object lockHandle;
 
-			var cachedObject = compositeObjectCache.FindAndLock(compositeObjectId, TimeSpan.FromSeconds(30), out lockHandle);
+			var cachedObject = compositeObjectCache.FindAndLock(compositeObjectId, lockTimespan, out lockHandle);
 			if (cachedObject != null)
 			{
 				cachedObject.ApplyChangeSet(changeSet, businessObjectDefinitionProvider);
@@ -64,7 +65,7 @@ namespace Overture.ChangeSets.Storage
 
 			object lockHandle;
 
-			compositeObjectCache.FindAndLock(compositeObjectId, TimeSpan.FromSeconds(30), out lockHandle);
+			compositeObjectCache.FindAndLock(compositeObjectId, lockTimespan, out lockHandle);
 
 			var changeSets = changeSetStorage.GetChangeSets(compositeObjectId);
 

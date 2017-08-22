@@ -14,7 +14,8 @@ namespace Overture.ChangeSets.Storage
 		private readonly Dictionary<Guid, CacheObject> globalStorage = new Dictionary<Guid, CacheObject>();
 		private readonly Dictionary<Guid, CompositeObject> localStorage = new Dictionary<Guid, CompositeObject>();
 		private readonly IBusinessObjectDefinitionProvider businessObjectDefinitionProvider;
-		
+		private TimeSpan lockTimespan = TimeSpan.FromSeconds(90);
+
 		public InMemoryCompositeObjectCache(IBusinessObjectDefinitionProvider businessObjectDefinitionProvider)
 		{
 			this.businessObjectDefinitionProvider = businessObjectDefinitionProvider;
@@ -38,7 +39,7 @@ namespace Overture.ChangeSets.Storage
 				return cachedObject;
 
 			object lockHandle;
-			cachedObject = FindAndLock(id, TimeSpan.FromSeconds(30), out lockHandle);
+			cachedObject = FindAndLock(id, lockTimespan, out lockHandle);
 			Unlock(id, lockHandle);
 			return cachedObject;
 		}
@@ -46,7 +47,7 @@ namespace Overture.ChangeSets.Storage
 		public void Drop(Guid id)
 		{
 			object lockHandle;
-			var cachedObject = FindAndLock(id, TimeSpan.FromSeconds(30), out lockHandle);
+			var cachedObject = FindAndLock(id, lockTimespan, out lockHandle);
 			if (cachedObject != null)
 			{
 				DropAndUnlock(id, lockHandle);
