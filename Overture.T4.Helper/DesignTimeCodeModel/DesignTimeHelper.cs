@@ -78,10 +78,11 @@ namespace Overture.T4.Helper.DesignTimeCodeModel
 
 		public static IEnumerable<EnumMemberDefinition> GetEnumMembers(this CodeElement codeElement)
 		{
-			return codeElement.Children
+			return ((CodeEnum)codeElement).Members
 				.Cast<CodeElement>()
 				.Where(c => c.Kind == vsCMElement.vsCMElementVariable)
-				.Select(c => new EnumMemberDefinition(c.GetText()));
+				.Cast<CodeVariable>()
+				.Select(c => new EnumMemberDefinition(c.InitExpression?.ToString()));
 		}
 
 		private static string GetPropertyTypeName(this CodeElement codeElement)
