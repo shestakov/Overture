@@ -37,6 +37,23 @@ namespace Overture.ChangeSets.Sql
 			return GetChangeSets(compositeObjectId, 0);
 		}
 
+		public long GetMaxTimestamp(Guid compositeObjectId)
+		{
+			using (var context = GetDataContext())
+			{
+				//return context.GetTable<CompositeObjectChangeSetEntity>()
+				//	.Where(e => e.CompositeObjectId == compositeObjectId)
+				//	.Select(e => (long?)e.Timestamp)
+				//	.Max() ?? 0;
+
+				return context
+						   .GetTable<CompositeObjectChangeSetEntity>()
+						   .Where(e => e.CompositeObjectId == compositeObjectId)
+						   .OrderByDescending(e => e.Timestamp)
+						   .FirstOrDefault()?.Timestamp ?? 0;
+			}
+		}
+
 		public IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId, long sinceTimestamp)
 		{
 			using (var context = GetDataContext())

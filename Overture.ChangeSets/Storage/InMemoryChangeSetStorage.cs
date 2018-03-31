@@ -20,10 +20,16 @@ namespace Overture.ChangeSets.Storage
 
 		public IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId)
 		{
-			ConcurrentDictionary<Guid, CompositeObjectChangeSet> changeSets;
-			return changeSetsByCompositeObjects.TryGetValue(compositeObjectId, out changeSets)
+			return changeSetsByCompositeObjects.TryGetValue(compositeObjectId, out var changeSets)
 				? changeSets.Values.OrderBy(c => c.Timestamp)
 				: Enumerable.Empty<CompositeObjectChangeSet>();
+		}
+
+		public long GetMaxTimestamp(Guid compositeObjectId)
+		{
+			return changeSetsByCompositeObjects.TryGetValue(compositeObjectId, out var changeSets)
+				? changeSets.Values.Max(c => c.Timestamp)
+				: long.MinValue;
 		}
 
 		public IEnumerable<CompositeObjectChangeSet> GetChangeSets(Guid compositeObjectId, long sinceTimestamp)
