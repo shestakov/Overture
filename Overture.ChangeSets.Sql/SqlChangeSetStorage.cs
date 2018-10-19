@@ -90,6 +90,7 @@ namespace Overture.ChangeSets.Sql
 			{
 				CompositeObjectId = changeSet.CompositeObjectId,
 				ChangeSetId = changeSet.ChangeSetId,
+				UserId = changeSet.UserId,
 				Timestamp = changeSet.Timestamp,
 				ContentLength = content.Length,
 				Content = content

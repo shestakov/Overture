@@ -13,6 +13,9 @@ namespace Overture.ChangeSets.Sql.Entities
 		public Guid ChangeSetId { get; set; }
 
 		[Column]
+		public Guid? UserId { get; set; }
+
+		[Column]
 		public long Timestamp { get; set; }
 
 		[Column]
