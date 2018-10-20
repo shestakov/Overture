@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overtute.Core.Web", "Overtu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.WebApi", "Overture.WebApi\Overture.WebApi.csproj", "{52234404-BB96-4F91-8B20-654F87A1646B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.T4.Helper", "Overture.T4.Helper\Overture.T4.Helper.csproj", "{9736F340-D5B1-4C55-BB3D-305F8C457BCF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overture.ChangeSets.SqlDb", "Overture.ChangeSets.SqlDb\Overture.ChangeSets.SqlDb.csproj", "{42F92EAD-EB0A-4969-8E86-E2FE31D865D6}"
 EndProject
 Global
@@ -55,10 +53,6 @@ Global
 		{52234404-BB96-4F91-8B20-654F87A1646B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52234404-BB96-4F91-8B20-654F87A1646B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52234404-BB96-4F91-8B20-654F87A1646B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9736F340-D5B1-4C55-BB3D-305F8C457BCF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{42F92EAD-EB0A-4969-8E86-E2FE31D865D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{42F92EAD-EB0A-4969-8E86-E2FE31D865D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42F92EAD-EB0A-4969-8E86-E2FE31D865D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
